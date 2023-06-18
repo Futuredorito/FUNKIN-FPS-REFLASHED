@@ -149,7 +149,9 @@ class PlayState extends MusicBeatState
 	private var healthBar:FlxBar;
 
 	public var timeBarBG:FlxSprite;
+
 	public static var timeBar:FlxBar;
+
 	var timeTxt:FlxText;
 	private var timeBarTime:Float = 0;
 
@@ -217,8 +219,28 @@ class PlayState extends MusicBeatState
 
 	private var meta:SongMetaTags;
 
-	var script:HScript;
+	var scripts:Array<HScript>;
 	var stage:Stage;
+
+	public static var ratingPsych:Array<Dynamic> = [
+		['You Suck!', 0.2], // From 0% to 19%
+		['Shit', 0.4], // From 20% to 39%
+		['Bad', 0.5], // From 40% to 49%
+		['Bruh', 0.6], // From 50% to 59%
+		['Meh', 0.69], // From 60% to 68%
+		['Nice', 0.7], // 69%
+		['Good', 0.8], // From 70% to 79%
+		['Great', 0.9], // From 80% to 89%
+		['Sick!', 1], // From 90% to 99%
+		['Perfect!!', 1] // The value on this one isn't used actually, since Perfect is always "1"
+	];
+
+	public static var sicks:Int = 0;
+	public static var goods:Int = 0;
+	public static var bads:Int = 0;
+	private static var shits:Int;
+
+	var scoreTween:Bool = false;
 
 	override public function create()
 	{
@@ -256,14 +278,37 @@ class PlayState extends MusicBeatState
 		eventList.sort(sortByEventStuff);
 
 		#if sys
-		script = new HScript('data/${SONG.song}/script');
-		if (!script.isBlank && script.expr != null) {
-			script.interp.scriptObject = this;
-			script.setValue("yooo", true);
-			script.interp.execute(script.expr);
+		scripts = new Array<HScript>();
+
+		if (Assets.exists(Paths.text(SONG.song + '/scripts')))
+		{
+			for (i in CoolUtil.coolTextFile(Paths.text(SONG.song + '/scripts')))
+			{
+				var script:HScript = new HScript('data/' + SONG.song + '/' + i);
+
+				if (!script.isBlank && script.expr != null)
+				{
+					script.interp.scriptObject = this;
+					script.interp.execute(script.expr);
+					script.setValue('add', add);
+				}
+
+				scripts.push(script);
+			}
 		}
 
-		script.callFunction('create');
+		var stageScript:HScript = new HScript('stages/' + SONG.stage + '/');
+
+		if (!stageScript.isBlank && stageScript.expr != null)
+			{
+				stageScript.interp.scriptObject = this;
+				stageScript.interp.execute(stageScript.expr);
+			}
+
+		scripts.push(stageScript);
+
+		for (i in scripts)
+			i.callFunction('create');
 		#end
 
 		FlxG.sound.cache(Paths.inst(SONG.song));
@@ -1029,12 +1074,15 @@ class PlayState extends MusicBeatState
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
-		scoreTxt = new FlxText(healthBarBG.x - 105, (FlxG.height * 0.9) + 12, 800, "", 22);
+		scoreTxt = new FlxText(0, (FlxG.height * 0.9) + 12, FlxG.width, "", 22);
 		scoreTxt.setFormat(Paths.font("vcr"), 22, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.screenCenter(X);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
-		var watermarkTxt = new FlxText(healthBarBG.x - 340, (FlxG.height * 0.9) + 52, 800, SONG.song + ' - ' + storyDifficultyString.toUpperCase() + ' - ' + Application.current.meta.get('version').split('|')[2], 18);
+		var watermarkTxt = new FlxText(healthBarBG.x - 340, (FlxG.height * 0.9) + 52, 800, SONG.song.replace('-', ' ') + ' - ' + storyDifficultyString.toUpperCase() + ' - ' + Application.current.meta.get('version').split('|')[2], 18);
+		if (FreeplayState.speed != 1)
+			watermarkTxt.text = SONG.song.replace('-', ' ') + 'X' + FreeplayState.speed + ' - ' + storyDifficultyString.toUpperCase() + ' - ' + Application.current.meta.get('version').split('|')[2];
 		watermarkTxt.setFormat(Paths.font("vcr"), 18, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		watermarkTxt.scrollFactor.set();
 		add(watermarkTxt);
@@ -1167,7 +1215,8 @@ class PlayState extends MusicBeatState
 		bgDim.alpha = Config.bgDim / 10;
 		add(bgDim);
 
-		script.callFunction('createPost');
+		for (i in scripts)
+			i.callFunction('createPost');
 	}
 
 	function updateAccuracy()
@@ -1178,7 +1227,9 @@ class PlayState extends MusicBeatState
 		{
 			accuracy = 100;
 		}
-		script.callFunction('updateAccuracy');
+
+		for (i in scripts)
+			i.callFunction('updateAccuracy');
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
@@ -1318,7 +1369,8 @@ class PlayState extends MusicBeatState
 		inCutscene = false;
 
 		#if sys
-		script.callFunction('startCountdown');
+		for (i in scripts)
+			i.callFunction('startCountdown');
 		#end
 
 		generateStaticArrows(0);
@@ -1482,6 +1534,12 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
+		if (!isStoryMode)
+		{
+			FlxG.sound.music.pitch = FreeplayState.speed;
+			vocals.pitch = FreeplayState.speed;
+		}
+
 		if (sectionStart)
 		{
 			FlxG.sound.music.time = sectionStartTime;
@@ -1598,54 +1656,61 @@ class PlayState extends MusicBeatState
 
 		generatedMusic = true;
 
-		timeBarBG = new FlxSprite(0, Config.downscroll ? FlxG.height * 0.875 : FlxG.height * 0.1).loadGraphic(Paths.image("ui/healthBar"));
-		timeBarBG.y -= 65.3;
-		if (Config.uiType == 'PSYCH'){
-			timeBarBG.scale.set(0.6, 1.03);
-			timeBarBG.scale.x += 0.092;
-		} else if (Config.uiType != 'KADE'){
-			timeBarBG.scale.set(0.7, 0.79);
-		}
-		timeBarBG.screenCenter(X);
-		timeBarBG.scrollFactor.set();
-		timeBarBG.antialiasing = true;
-		add(timeBarBG);
+		if (Config.uiType != 'BASE')
+		{
+			timeBarBG = new FlxSprite(0, Config.downscroll ? FlxG.height * 0.875 : FlxG.height * 0.1).loadGraphic(Paths.image("ui/healthBar"));
+			timeBarBG.y -= 65.3;
+			if (Config.uiType == 'PSYCH')
+			{
+				timeBarBG.scale.set(0.6, 1.03);
+				timeBarBG.scale.x += 0.092;
+			}
+			else if (Config.uiType != 'KADE')
+			{
+				timeBarBG.scale.set(0.7, 0.79);
+			}
+			timeBarBG.screenCenter(X);
+			timeBarBG.scrollFactor.set();
+			timeBarBG.antialiasing = true;
+			add(timeBarBG);
 
-		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
-			'timeBarTime', 0, ((FlxG.sound.music.length) / 1000));
-		if (Config.uiType != 'KADE')
-			timeBar.scale.set(timeBarBG.scale.x, timeBarBG.scale.y);
-		timeBar.numDivisions = 600;
-		timeBar.scrollFactor.set();
-		if (Config.uiType == 'PSYCH')
-			timeBar.createFilledBar(FlxColor.BLACK, FlxColor.WHITE);
-		else if (Config.uiType == 'KADE')
-			timeBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
-		else
-			timeBar.createFilledBar(FlxColor.BLACK, FlxColor.MAGENTA);
-		timeBar.antialiasing = true;
-		add(timeBar);
+			timeBar = new FlxBar(0, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this, 'timeBarTime', 0,
+				((FlxG.sound.music.length) / 1000));
+			if (Config.uiType != 'KADE')
+				timeBar.scale.set(timeBarBG.scale.x, timeBarBG.scale.y);
+			timeBar.numDivisions = 600;
+			timeBar.screenCenter(X);
+			timeBar.scrollFactor.set();
+			if (Config.uiType == 'PSYCH')
+				timeBar.createFilledBar(FlxColor.BLACK, FlxColor.WHITE);
+			else if (Config.uiType == 'KADE')
+				timeBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			else
+				timeBar.createFilledBar(FlxColor.BLACK, FlxColor.MAGENTA);
+			timeBar.antialiasing = true;
+			add(timeBar);
 
-		timeTxt = new FlxText(timeBar.x + 230, timeBar.y - 7, 0);
-		timeTxt.setFormat(Paths.font("vcr"), 22, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		if (Config.uiType == 'PSYCH'){
-			timeTxt.text = '0:00';
-			timeTxt.size = 25;
-			timeTxt.scale.y += 0.24;
-			timeTxt.scale.x += 0.10;
-			timeTxt.x += 34;
-		}if (Config.uiType == 'KADE'){
-			timeTxt.text = SONG.song;
+			timeTxt = new FlxText(0, timeBar.y - 7, FlxG.width);
+			timeTxt.setFormat(Paths.font("vcr"), 22, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			if (Config.uiType == 'PSYCH')
+			{
+				timeTxt.text = '0:00';
+				timeTxt.size = 25;
+				timeTxt.scale.y += 0.24;
+				timeTxt.scale.x += 0.10;
+			}
+			if (Config.uiType == 'KADE')
+				timeTxt.text = SONG.song;
+			else
+				timeTxt.text = '0:00 / ' + FlxStringUtil.formatTime(((FlxG.sound.music.length) / 1000));
 			timeTxt.screenCenter(X);
-		}else{
-			timeTxt.text = '0:00 / ' + FlxStringUtil.formatTime(((FlxG.sound.music.length) / 1000));
-		}
-		timeTxt.scrollFactor.set();
-		add(timeTxt);
+			timeTxt.scrollFactor.set();
+			add(timeTxt);
 
-		timeBarBG.cameras = [camHUD];
-		timeBar.cameras = [camHUD];
-		timeTxt.cameras = [camHUD];
+			timeBarBG.cameras = [camHUD];
+			timeBar.cameras = [camHUD];
+			timeTxt.cameras = [camHUD];
+		}
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -1660,7 +1725,8 @@ class PlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int):Void
 	{
-		script.callFunction('generateStaticArrows', [player]);
+		for (i in scripts)
+			i.callFunction('generateStaticArrows', [player]);
 
 		for (i in 0...4)
 		{
@@ -1783,7 +1849,8 @@ class PlayState extends MusicBeatState
 			strumLineNotes.add(babyArrow);
 		}
 
-		script.callFunction('generateStaticArrowsPost', [player]);
+		for (i in scripts)
+			i.callFunction('generateStaticArrowsPost', [player]);
 	}
 
 	override function openSubState(SubState:FlxSubState)
@@ -1848,9 +1915,11 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		script.callFunction('update', [elapsed]);
+		for (i in scripts)
+			i.callFunction('update', [elapsed]);
 
-		if (generatedMusic){
+		if (generatedMusic)
+		{
 			timeBarTime = (Conductor.songPosition - ((FlxG.sound.music.length) / 1000)) / 1000;
 
 			if (Config.uiType == 'PSYCH')
@@ -1908,7 +1977,6 @@ class PlayState extends MusicBeatState
 						trainFrameTiming = 0;
 					}
 				}
-			// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 
 			case 'tank':
 				moveTank();
@@ -1918,12 +1986,60 @@ class PlayState extends MusicBeatState
 
 		timeBarTime = (Conductor.songPosition) / 1000;
 
-		switch (Config.accuracy)
+		switch Config.uiType
 		{
-			case "none":
-				scoreTxt.text = "Score:" + songScore;
+			case "REFLASHED":
+				scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Combo:" + combo + " | Health:" + truncateFloat(health * 50, 2)
+					+ " | Accuracy:" + truncateFloat(accuracy, 2) + "%";
+			case 'KADE':
+				scoreTxt.text = "Score:" + songScore + " | Combo Breaks:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + " %";
+			case 'PSYCH':
+				var ratingAccuracy:Float = 0.00;
+				var ratingName:String = '?';
+				var fcRatingThing:String = null; // dont you love this
+
+				ratingAccuracy = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
+
+				// Rating Name
+				if (ratingAccuracy >= 1)
+				{
+					ratingName = ratingPsych[ratingPsych.length - 1][0]; // Uses last string
+				}
+				else
+				{
+					for (i in 0...ratingPsych.length - 1)
+					{
+						if (ratingAccuracy < ratingPsych[i][1])
+						{
+							ratingName = ratingPsych[i][0];
+							break;
+						}
+					}
+				}
+
+				// Rating FC
+				fcRatingThing = "?";
+				if (sicks > 0)
+					fcRatingThing = "SFC";
+				if (goods > 0)
+					fcRatingThing = "GFC";
+				if (bads > 0 || shits > 0)
+					fcRatingThing = "FC";
+				if (misses > 0 && misses < 10)
+					fcRatingThing = "SDCB";
+				else if (misses >= 10)
+					fcRatingThing = "Clear";
+
+				var rating:String = null;
+
+				if (totalNotesHit > 0)
+					rating = ratingName + " (" + truncateFloat(accuracy, 2) + "%) - " + fcRatingThing;
+				else
+					rating = '?';
+
+				scoreTxt.text = "Score: " + songScore + " | Misses: " + misses + " | Rating: " + rating;
 			default:
-				scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Combo:" + combo + " |" + " | Accuracy:" + truncateFloat(accuracy, 2) + "%";
+				scoreTxt.text = "Score:" + songScore;
 		}
 
 		if (controls.PAUSE && startedCountdown && canPause)
@@ -2145,7 +2261,8 @@ class PlayState extends MusicBeatState
 		rightPress = false;
 		rightRelease = false;
 
-		script.callFunction('updatePost', [elapsed]);
+		for (i in scripts)
+			i.callFunction('updatePost', [elapsed]);
 	}
 
 	function updateNote()
@@ -2238,7 +2355,8 @@ class PlayState extends MusicBeatState
 				daNote.wasGoodHit = true;
 
 				#if sys
-				script.callFunction('dadNoteHit', [daNote]);
+				for (i in scripts)
+					i.callFunction('dadNoteHit', [daNote]);
 				#end
 
 				var altAnim:String = "";
@@ -2298,7 +2416,8 @@ class PlayState extends MusicBeatState
 	public function endSong():Void
 	{
 		#if sys
-		script.callFunction('endSong');
+		for (i in scripts)
+			i.callFunction('endSong');
 		#end
 
 		canPause = false;
@@ -2403,71 +2522,40 @@ class PlayState extends MusicBeatState
 		var daRating:String = "sick";
 
 		#if sys
-		script.callFunction('popUpScore', [note]);
+		for (i in scripts)
+			i.callFunction('popUpScore', [note]);
 		#end
 
 		if (noteDiff > Conductor.safeZoneOffset * Conductor.shitZone)
 		{
 			daRating = 'shit';
-			if (Config.accuracy == "complex")
-			{
-				totalNotesHit += 1 - Conductor.shitZone;
-			}
-			else
-			{
-				totalNotesHit += 1;
-			}
+			totalNotesHit += 1 - Conductor.shitZone;
 			score = 50;
-
-			if (Config.noteSplashType == 2)
-			{
-				createNoteSplash(note.noteData);
-			}
+			shits++;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * Conductor.badZone)
 		{
 			daRating = 'bad';
 			score = 100;
-			if (Config.accuracy == "complex")
-			{
-				totalNotesHit += 1 - Conductor.badZone;
-			}
-			else
-			{
-				totalNotesHit += 1;
-			}
-
-			if (Config.noteSplashType == 2)
-			{
-				createNoteSplash(note.noteData);
-			}
+			totalNotesHit += 1 - Conductor.badZone;
+			bads++;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * Conductor.goodZone)
 		{
 			daRating = 'good';
-			if (Config.accuracy == "complex")
-			{
-				totalNotesHit += 1 - Conductor.goodZone;
-			}
-			else
-			{
-				totalNotesHit += 1;
-			}
+			totalNotesHit += 1 - Conductor.goodZone;
 			score = 200;
-
-			if (Config.noteSplashType == 2)
-			{
-				createNoteSplash(note.noteData);
-			}
+			goods++;
 		}
 		if (daRating == 'sick')
 		{
 			totalNotesHit += 1;
+			sicks++;
+		}
 
-			if (Config.noteSplashType > 0)
-			{
-				createNoteSplash(note.noteData);
-			}
+		if (Config.noteSplashType == 2 || daRating == 'sick')
+		{
+			createNoteSplash(note);
 		}
 
 		// trace('hit ' + daRating);
@@ -2480,11 +2568,11 @@ class PlayState extends MusicBeatState
 			comboUI.comboPopup(combo);
 	}
 
-	private function createNoteSplash(note:Int)
+	private function createNoteSplash(note:Note)
 	{
-		var bigSplashy = new NoteSplash(playerStrums.members[note].x, playerStrums.members[note].y, note);
-		bigSplashy.cameras = [camHUD];
-		add(bigSplashy);
+		var splashySplash = new NoteSplash(note.x, strumLine.y, note.noteData);
+		splashySplash.cameras = [camHUD];
+		add(splashySplash);
 	}
 
 	public function keyDown(evt:KeyboardEvent):Void
@@ -3023,7 +3111,8 @@ class PlayState extends MusicBeatState
 	function goodNoteHit(note:Note):Void
 	{
 		#if sys
-		script.callFunction('bgNoteHit', [note]);
+		for (i in scripts)
+			i.callFunction('bfNoteHit', [note]);
 		#end
 
 		// Guitar Hero Styled Hold Notes
@@ -3043,6 +3132,17 @@ class PlayState extends MusicBeatState
 			{
 				popUpScore(note);
 				combo += 1;
+				if (Config.uiType == 'PSYCH' && !scoreTween)
+				{
+					scoreTween = true;
+					scoreTxt.scale.set(1.075, 1.075);
+					FlxTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.2, {
+						onComplete: function(tween)
+						{
+							scoreTween = false;
+						}
+					});
+				}
 			}
 			else
 				totalNotesHit += 1;
@@ -3206,7 +3306,8 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		#if sys
-		script.callFunction('stepHit');
+		for (i in scripts)
+			i.callFunction('stepHit');
 		#end
 
 		if (stage != null)
@@ -3234,7 +3335,8 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		#if sys
-		script.callFunction('beatHit');
+		for (i in scripts)
+			i.callFunction('beatHit');
 		#end
 
 		if (stage != null)
@@ -3370,7 +3472,8 @@ class PlayState extends MusicBeatState
 	private function executeEvent(tag:String):Void
 	{
 		#if sys
-		script.callFunction('executeEvent', [tag]);
+		for (i in scripts)
+			i.callFunction('executeEvent', [tag]);
 		#end
 
 		if (tag.startsWith("playAnim;"))

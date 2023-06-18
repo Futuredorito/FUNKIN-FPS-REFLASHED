@@ -7,7 +7,6 @@ class Config
 {
 	
 	public static var offset:Float;
-	public static var accuracy:String;
 	public static var uiType:String;
 	public static var healthMultiplier:Float;
 	public static var healthDrainMultiplier:Float;
@@ -23,8 +22,7 @@ class Config
 	public static function resetSettings():Void{
 
 		FlxG.save.data.offset = 0.0;
-		FlxG.save.data.accuracy = "simple";
-		FlxG.save.data.uiType = "REFLAHSED";
+		FlxG.save.data.uiType = "REFLASHED";
 		FlxG.save.data.healthMultiplier = 1.0;
 		FlxG.save.data.healthDrainMultiplier = 1.0;
 		FlxG.save.data.comboType = 0;
@@ -42,7 +40,6 @@ class Config
 	public static function reload():Void
 	{
 		offset = FlxG.save.data.offset;
-		accuracy = FlxG.save.data.accuracy;
 		uiType = FlxG.save.data.uiType;
 		healthMultiplier = FlxG.save.data.healthMultiplier;
 		healthDrainMultiplier = FlxG.save.data.healthDrainMultiplier;
@@ -58,7 +55,6 @@ class Config
 	
 	public static function write(
 								offsetW:Float, 
-								accuracyW:String, 
 								uiTypeW:String,
 								healthMultiplierW:Float, 
 								healthDrainMultiplierW:Float, 
@@ -74,7 +70,6 @@ class Config
 	{
 
 		FlxG.save.data.offset = offsetW;
-		FlxG.save.data.accuracy = accuracyW;
 		FlxG.save.data.uiType = uiTypeW;
 		FlxG.save.data.healthMultiplier = healthMultiplierW;
 		FlxG.save.data.healthDrainMultiplier = healthDrainMultiplierW;
@@ -96,8 +91,6 @@ class Config
 	{
 		if(FlxG.save.data.offset == null)
 			FlxG.save.data.offset = 0.0;
-		if(FlxG.save.data.accuracy == null)
-			FlxG.save.data.accuracy = "simple";
 		if(FlxG.save.data.uiType == null)
 			FlxG.save.data.uiType = "REFLASHED";
 		if(FlxG.save.data.healthMultiplier == null)

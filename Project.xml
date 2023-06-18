@@ -59,7 +59,6 @@
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 
-
 	<haxelib name="scriptless-polymod"/>
 
 	<!--Yoshi Crafter Hscript better-->

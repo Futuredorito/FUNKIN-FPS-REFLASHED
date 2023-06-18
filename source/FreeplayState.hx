@@ -1,15 +1,30 @@
 package;
 
-import flash.text.TextField;
+import openfl.media.SoundMixer;
+import openfl.Assets;
+import haxe.Json;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
 using StringTools;
+
+typedef FreeplaySongShit =
+{
+	var song:String;
+	var icon:String;
+	var diffs:Array<String>;
+	var color:FlxColor;
+	var week:Int;
+}
+
+typedef FreeplayJsonShit =
+{
+	var songs:Array<FreeplaySongShit>;
+}
 
 class FreeplayState extends MusicBeatState
 {
@@ -31,6 +46,9 @@ class FreeplayState extends MusicBeatState
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
+
+	public static var jsonParseShit:FreeplayJsonShit;
+	public static var speed:Float = 1;
 
 	override function create()
 	{
@@ -54,8 +72,10 @@ class FreeplayState extends MusicBeatState
 
 		addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
-		for (moddedSongs in CoolUtil.coolTextFile(Paths.text('freeplaySongList')))
-			addSong(moddedSongs, 1, 'gf-menu');
+		jsonParseShit = Json.parse(Assets.getText(Paths.json('freeplaySongList')));
+
+		for (songs in jsonParseShit.songs)
+			addSong(songs.song, songs.week, songs.icon);
 
 		// LOAD CHARACTERS
 
@@ -101,6 +121,7 @@ class FreeplayState extends MusicBeatState
 
 		changeSelection(startingSelection);
 		changeDiff();
+		FlxG.sound.music.pitch = speed;
 
 		super.create();
 	}
@@ -134,7 +155,7 @@ class FreeplayState extends MusicBeatState
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
 
-		scoreText.text = "PERSONAL BEST:" + lerpScore;
+		scoreText.text = "PERSONAL BEST:" + lerpScore + "\nSPEED:" + speed;
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
@@ -149,10 +170,35 @@ class FreeplayState extends MusicBeatState
 			changeSelection(1);
 		}
 
-		if (controls.LEFT_P)
-			changeDiff(-1);
-		if (controls.RIGHT_P)
-			changeDiff(1);
+		if (FlxG.mouse.wheel > 0 || FlxG.mouse.wheel < 0)
+			changeSelection(-FlxG.mouse.wheel);
+
+		if (!FlxG.keys.pressed.SHIFT)
+		{
+			if (controls.LEFT_P)
+				changeDiff(-1);
+			if (controls.RIGHT_P)
+				changeDiff(1);
+		}
+
+		if (FlxG.keys.pressed.SHIFT){
+			if (controls.LEFT_P){
+				speed -= 0.5;
+				
+				if (speed < 0.5)
+					speed = 0.5;
+
+				FlxG.sound.music.pitch = speed;
+			}
+			if (controls.RIGHT_P){
+				speed += 0.5;
+
+				if (speed > 10)
+					speed = 10;
+
+				FlxG.sound.music.pitch = speed;
+			}
+		}
 
 		if (controls.BACK)
 		{
@@ -223,6 +269,7 @@ class FreeplayState extends MusicBeatState
 
 		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		FlxG.sound.music.fadeIn(1, 0, 0.8);
+		FlxG.sound.music.pitch = speed;
 
 		var bullShit:Int = 0;
 

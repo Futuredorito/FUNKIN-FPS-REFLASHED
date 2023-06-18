@@ -8,7 +8,6 @@ using StringTools;
 
 class CoolUtil
 {
-
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = Assets.getText(path).trim().split('\n');
@@ -44,8 +43,8 @@ class CoolUtil
 	}
 
 	/*
-	* just lerp that does camLerpShit for u so u dont have to do it every time
-	*/
+	 * just lerp that does camLerpShit for u so u dont have to do it every time
+	 */
 	public static inline function fpsAdjsutedLerp(a:Float, b:Float, ratio:Float):Float
 	{
 		return FlxMath.lerp(a, b, fpsAdjust(ratio));

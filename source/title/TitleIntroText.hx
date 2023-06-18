@@ -23,21 +23,21 @@ class TitleIntroText extends MusicBeatState
 		useDefaultTransIn = false;
 		useDefaultTransOut = false;
 
-		FlxG.mouse.visible = false;
-        FlxG.sound.muteKeys = null;
+		UIStateExt.defaultTransIn = transition.data.ScreenWipeIn;
+		UIStateExt.defaultTransInArgs = [1.2];
+		UIStateExt.defaultTransOut = transition.data.ScreenWipeOut;
+		UIStateExt.defaultTransOutArgs = [0.6];
 
-        FlxG.save.bind('data');
+		FlxG.mouse.visible = false;
+		FlxG.sound.muteKeys = null;
+
+		FlxG.save.bind('data');
 		Highscore.load();
 		config.KeyBinds.keyCheck();
 		PlayerSettings.init();
 
-        PlayerSettings.player1.controls.loadKeyBinds();
+		PlayerSettings.player1.controls.loadKeyBinds();
 		config.Config.configCheck();
-
-        UIStateExt.defaultTransIn = transition.data.ScreenWipeIn;
-        UIStateExt.defaultTransInArgs = [1.2];
-        UIStateExt.defaultTransOut = transition.data.ScreenWipeOut;
-        UIStateExt.defaultTransOutArgs = [0.6];
 
 		#if sys
 		polymod.Polymod.init({
@@ -61,18 +61,18 @@ class TitleIntroText extends MusicBeatState
 		#end
 
 		#if sys
-			HScript.parser = new hscript.Parser();
-			HScript.parser.allowJSON = true;
-			HScript.parser.allowMetadata = true;
-			HScript.parser.allowTypes = true;
-			HScript.parser.preprocesorValues = [
-				"desktop" => #if (desktop) true #else false #end,
-				"windows" => #if (windows) true #else false #end,
-				"mac" => #if (mac) true #else false #end,
-				"linux" => #if (linux) true #else false #end,
-				"debugBuild" => #if (debug) true #else false #end
-			];
-			#end
+		HScript.parser = new hscript.Parser();
+		HScript.parser.allowJSON = true;
+		HScript.parser.allowMetadata = true;
+		HScript.parser.allowTypes = true;
+		HScript.parser.preprocesorValues = [
+			"desktop" => #if (desktop) true #else false #end,
+			"windows" => #if (windows) true #else false #end,
+			"mac" => #if (mac) true #else false #end,
+			"linux" => #if (linux) true #else false #end,
+			"debugBuild" => #if (debug) true #else false #end
+		];
+		#end
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -92,6 +92,19 @@ class TitleIntroText extends MusicBeatState
 		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0.8);
 		TitleScreen.titleMusic = "freakyMenu";
 
+		var http = new haxe.Http("https://raw.githubusercontent.com/504brandon/FUNKIN-FPS-REFLASHED/master/update.txt?token=GHSAT0AAAAAACC42UPSDIM2Z6J56PIUVOUSZEJR6GA");
+
+		http.onData = function(data:String)
+		{
+			trace(data.split('\n')[0].trim());
+		}
+
+		http.onError = function(error)
+		{
+			trace('error: $error');
+		}
+
+		http.request();
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -173,8 +186,6 @@ class TitleIntroText extends MusicBeatState
 			textGroup.remove(textGroup.members[0], true);
 		}
 	}
-
-	
 
 	override function beatHit()
 	{

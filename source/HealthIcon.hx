@@ -26,12 +26,7 @@ class HealthIcon extends FlxSprite
 
 		isPlayer = _isPlayer;
 
-		if(Assets.exists(Paths.file("ui/heathIcons/" + _character, "images", "png"))){
-			character = _character;
-		}
-		else{
-			trace("No icon exists at ui/heathIcons/" + _character + ".png, defaulting to face.");
-		}
+		character = _character;
 
 		setIconCharacter(character);
 
@@ -46,8 +41,6 @@ class HealthIcon extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-
-
 		super.update(elapsed);
 		setGraphicSize(Std.int(iconSize * iconScale));
 		updateHitbox();
@@ -61,17 +54,21 @@ class HealthIcon extends FlxSprite
 
 		tween.cancel();
 		tween = FlxTween.tween(this, {iconScale: this.defualtIconScale}, _time, {ease: _ease});
-
 	}
 
 	public function setIconCharacter(character:String){
+		if (openfl.Assets.exists(Paths.image("ui/heathIcons/" + character)))
+			loadGraphic(Paths.image("ui/heathIcons/" + character), true, 150, 150);
+		else if (openfl.Assets.exists(Paths.image("icons/" + character)))
+			loadGraphic(Paths.image("icons/" + character), true, 150, 150);
+		else if (openfl.Assets.exists(Paths.image("icons/icon-" + character)))
+			loadGraphic(Paths.image(Paths.image("icons/icon-" + character)), true, 150, 150);
+		else
+			loadGraphic(Paths.image("ui/heathIcons/face"), true, 150, 150);
 
-		loadGraphic(Paths.image("ui/heathIcons/" + character), true, 150, 150);
 		animation.add("icon", [0, 1, 2], 0, false, isPlayer);
 		animation.play("icon");
 
 		antialiasing = !pixelIcons.contains(character);
-
 	}
-
 }
