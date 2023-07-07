@@ -5,7 +5,6 @@ using StringTools;
 
 class Config
 {
-	
 	public static var offset:Float;
 	public static var uiType:String;
 	public static var healthMultiplier:Float;
@@ -117,5 +116,4 @@ class Config
 		if(FlxG.save.data.ee1 == null)
 			FlxG.save.data.ee1 = false;
 	}
-	
 }

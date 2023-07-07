@@ -57,25 +57,19 @@ class HScript {
 			var defaultVars:Map<String, Dynamic> = [
 				"Math" => Math,
 				"Std" => Std,
-
 				"FlxG" => flixel.FlxG,
 				"FlxSprite" => flixel.FlxSprite,
 				"FlxText" => flixel.text.FlxText,
 				"FlxTween" => flixel.tweens.FlxTween,
-
-				// Abstract Imports
-				"FlxColor" => Type.resolveClass("flixel.util._FlxColor.FlxColor_Impl_"),
-				// Flixel Addons because hscript says "FUCK YOU! I AINT IMPORTING ADDONS!"
 				"FlxTrail" => flixel.addons.effects.FlxTrail,
 				"FlxBackdrop" => flixel.addons.display.FlxBackdrop,
-
+				"FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
+				"Assets" => openfl.Assets,
 				"Paths" => Paths,
 				"Files" => Paths,
 				"Conductor" => Conductor,
 				"PlayState" => PlayState,
 				"MusicBeatState" => MusicBeatState,
-
-				"Assets" => Assets
 			];
 			for (va in defaultVars.keys())
 				setValue(va, defaultVars[va]);

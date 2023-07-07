@@ -39,7 +39,6 @@ class NoteSplash extends FlxSprite{
                 offset.set(width * -0.1, height * -0.1);
                 var angles = [0, 90, 180, 270];
                 angle = angles[FlxG.random.int(0, 3)];
-                //alpha = 0.8;
 
             default:
                 updateHitbox();

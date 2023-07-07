@@ -28,7 +28,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -137,7 +137,6 @@ class PlayState extends MusicBeatState
 	private var curSong:String = "";
 
 	private var health:Float = 1;
-	private var healthLerp:Float = 1.4;
 
 	private var combo:Int = 0;
 	private var misses:Int = 0;
@@ -269,7 +268,7 @@ class PlayState extends MusicBeatState
 				};
 			}
 		}
-
+		
 		for (i in EVENTS.events)
 		{
 			eventList.push([i[1], i[3]]);
@@ -289,23 +288,30 @@ class PlayState extends MusicBeatState
 				if (!script.isBlank && script.expr != null)
 				{
 					script.interp.scriptObject = this;
-					script.interp.execute(script.expr);
 					script.setValue('add', add);
+					script.interp.execute(script.expr);
 				}
 
 				scripts.push(script);
 			}
 		}
 
-		var stageScript:HScript = new HScript('stages/' + SONG.stage + '/');
-
-		if (!stageScript.isBlank && stageScript.expr != null)
+		if (Assets.exists(Paths.text('scripts', 'scripts')))
+		{
+			for (i in CoolUtil.coolTextFile(Paths.text('scripts', 'scripts')))
 			{
-				stageScript.interp.scriptObject = this;
-				stageScript.interp.execute(stageScript.expr);
-			}
+				var script:HScript = new HScript('scripts/$i');
 
-		scripts.push(stageScript);
+				if (!script.isBlank && script.expr != null)
+				{
+					script.interp.scriptObject = this;
+					script.setValue('add', add);
+					script.interp.execute(script.expr);
+				}
+
+				scripts.push(script);
+			}
+		}
 
 		for (i in scripts)
 			i.callFunction('create');
@@ -531,16 +537,6 @@ class PlayState extends MusicBeatState
 				grpLimoDancers.add(dancer);
 			}
 
-			// overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(Paths.images("limo/limoOverlay"));
-			// overlayShit.alpha = 0.5;
-			// add(overlayShit);
-
-			// var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
-
-			// FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
-
-			// overlayShit.shader = shaderBullshit;
-
 			limo = new FlxSprite(-120, 550);
 			limo.frames = Paths.getSparrowAtlas("week4/limo/limoDrive");
 			limo.animation.addByPrefix('drive', "Limo stage", 24);
@@ -548,7 +544,6 @@ class PlayState extends MusicBeatState
 			limo.antialiasing = true;
 
 			fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image("week4/limo/fastCarLol"));
-			// add(limo);
 		}
 		else if (stageCheck == 'mall')
 		{
@@ -747,7 +742,6 @@ class PlayState extends MusicBeatState
 
 			tankGround = new BGSprite('week7/stage/tankRolling', 300, 300, 0.5, 0.5, ['BG tank w lighting'], true);
 			add(tankGround);
-			// tankGround.active = false;
 
 			tankmanRun = new FlxTypedGroup<TankmenBG>();
 			add(tankmanRun);
@@ -883,7 +877,6 @@ class PlayState extends MusicBeatState
 				// trailArea.scrollFactor.set();
 
 				var evilTrail = new DeltaTrail(dad, null, 10, 3 / 60, 0.4);
-				// var evilTrail = new DeltaTrail(dad, null, 10, 24 / 60, 0.4, 0.005); //This is basically the default look of Spirit in base game.
 				add(evilTrail);
 
 				boyfriend.x += 200;
@@ -898,17 +891,8 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 0;
 				dad.y += 60;
 				dad.x -= 80;
-
-				if (gf.curCharacter != 'pico-speaker')
-				{
-					gf.x -= 170;
-					gf.y -= 75;
-				}
-				else
-				{
-					gf.x -= 50;
-					gf.y -= 200;
-				}
+				gf.x -= 170;
+				gf.y -= 75;
 		}
 
 		add(gf);
@@ -995,8 +979,6 @@ class PlayState extends MusicBeatState
 		}
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
-		// doof.x += 70;
-		// doof.y = FlxG.height * 0.5;
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
 
@@ -1018,11 +1000,7 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		enemyStrums = new FlxTypedGroup<FlxSprite>();
 
-		// startCountdown();
-
 		generateSong(SONG.song);
-
-		// add(strumLine);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 
@@ -1060,7 +1038,7 @@ class PlayState extends MusicBeatState
 		add(healthBarBG);
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'healthLerp', 0, 2);
+			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(dad.characterColor, boyfriend.characterColor);
 		healthBar.antialiasing = true;
@@ -1075,15 +1053,22 @@ class PlayState extends MusicBeatState
 		add(iconP2);
 
 		scoreTxt = new FlxText(0, (FlxG.height * 0.9) + 12, FlxG.width, "", 22);
-		scoreTxt.setFormat(Paths.font("vcr"), 22, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.setFormat(Paths.font("vcr"), 22, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		scoreTxt.screenCenter(X);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
-		var watermarkTxt = new FlxText(healthBarBG.x - 340, (FlxG.height * 0.9) + 52, 800, SONG.song.replace('-', ' ') + ' - ' + storyDifficultyString.toUpperCase() + ' - ' + Application.current.meta.get('version').split('|')[2], 18);
+		var watermarkTxt = new FlxText(0, scoreTxt.y
+			+ 30, FlxG.width,
+			SONG.song.replace('-', ' ')
+			+ ' - '
+			+ storyDifficultyString.toUpperCase()
+			+ ' - '
+			+ Application.current.meta.get('version').split('|')[2], 18);
 		if (FreeplayState.speed != 1)
-			watermarkTxt.text = SONG.song.replace('-', ' ') + 'X' + FreeplayState.speed + ' - ' + storyDifficultyString.toUpperCase() + ' - ' + Application.current.meta.get('version').split('|')[2];
-		watermarkTxt.setFormat(Paths.font("vcr"), 18, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			watermarkTxt.text = SONG.song.replace('-', ' ') + 'X' + FreeplayState.speed + ' - ' + storyDifficultyString.toUpperCase() + ' - '
+				+ Application.current.meta.get('version').split('|')[2];
+		watermarkTxt.setFormat(Paths.font("vcr"), 18, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
 		watermarkTxt.scrollFactor.set();
 		add(watermarkTxt);
 
@@ -1097,11 +1082,6 @@ class PlayState extends MusicBeatState
 		watermarkTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
-		// if (SONG.song == 'South')
-		// FlxG.camera.alpha = 0.7;
-		// UI_camera.zoom = 1;
-
-		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
 		if (isStoryMode)
@@ -1206,9 +1186,6 @@ class PlayState extends MusicBeatState
 		}
 		else
 			startCountdown();
-
-		// FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-		// FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 
 		var bgDim = new FlxSprite(1280 / -2, 720 / -2).makeGraphic(1280 * 2, 720 * 2, FlxColor.BLACK);
 		bgDim.cameras = [camOverlay];
@@ -1322,7 +1299,7 @@ class PlayState extends MusicBeatState
 		inCutscene = true;
 
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-		blackShit.screenCenter(XY);
+		blackShit.screenCenter();
 		blackShit.scrollFactor.set();
 		add(blackShit);
 
@@ -2072,16 +2049,6 @@ class PlayState extends MusicBeatState
 			health = 2;
 		}
 
-		if (healthLerp != health)
-		{
-			healthLerp = CoolUtil.fpsAdjsutedLerp(healthLerp, health, 0.7);
-		}
-		if (inRange(healthLerp, 2, 0.001))
-		{
-			healthLerp = 2;
-		}
-		// trace(healthLerp);
-
 		// Health Icons
 		if (healthBar.percent < 20)
 		{
@@ -2205,13 +2172,6 @@ class PlayState extends MusicBeatState
 		{
 			health = 0;
 			// trace("RESET = True");
-		}
-
-		// CHEAT = brandon's a pussy
-		if (controls.CHEAT)
-		{
-			health += 1;
-			// trace("User is cheating!");
 		}
 
 		if (health <= 0)
@@ -3472,6 +3432,14 @@ class PlayState extends MusicBeatState
 	private function executeEvent(tag:String):Void
 	{
 		#if sys
+		var script = new HScript('events/${tag.split(";")[1]}');
+		if (!script.isBlank && script.expr != null)
+		{
+			script.interp.scriptObject = this;
+			script.setValue('add', add);
+			script.interp.execute(script.expr);
+		}
+
 		for (i in scripts)
 			i.callFunction('executeEvent', [tag]);
 		#end

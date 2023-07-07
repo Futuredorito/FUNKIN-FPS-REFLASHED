@@ -8,6 +8,9 @@ using StringTools;
 
 class CoolUtil
 {
+	/**
+	 basically just used to parse txts
+	 */
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = Assets.getText(path).trim().split('\n');
@@ -48,5 +51,12 @@ class CoolUtil
 	public static inline function fpsAdjsutedLerp(a:Float, b:Float, ratio:Float):Float
 	{
 		return FlxMath.lerp(a, b, fpsAdjust(ratio));
+	}
+	
+	/**
+		because xml is dum dum
+	 */
+	static public function parseXML(str:String):Dynamic {
+		return haxe.xml.Parser.parse(str);
 	}
 }

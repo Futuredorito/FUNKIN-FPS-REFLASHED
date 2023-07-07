@@ -1,5 +1,7 @@
 package title;
 
+import config.ModSelectState;
+import config.Config;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -20,29 +22,31 @@ class TitleIntroText extends MusicBeatState
 
 	override public function create():Void
 	{
-		useDefaultTransIn = false;
-		useDefaultTransOut = false;
+		if (!ModSelectState.idk){
+			useDefaultTransIn = false;
+			useDefaultTransOut = false;
 
-		UIStateExt.defaultTransIn = transition.data.ScreenWipeIn;
-		UIStateExt.defaultTransInArgs = [1.2];
-		UIStateExt.defaultTransOut = transition.data.ScreenWipeOut;
-		UIStateExt.defaultTransOutArgs = [0.6];
+			UIStateExt.defaultTransIn = transition.data.ScreenWipeIn;
+			UIStateExt.defaultTransInArgs = [1.2];
+			UIStateExt.defaultTransOut = transition.data.ScreenWipeOut;
+			UIStateExt.defaultTransOutArgs = [0.6];
 
-		FlxG.mouse.visible = false;
-		FlxG.sound.muteKeys = null;
+			FlxG.mouse.visible = false;
+			FlxG.sound.muteKeys = null;
 
-		FlxG.save.bind('data');
-		Highscore.load();
-		config.KeyBinds.keyCheck();
-		PlayerSettings.init();
+			FlxG.save.bind('data');
+			Highscore.load();
+			config.KeyBinds.keyCheck();
+			PlayerSettings.init();
 
-		PlayerSettings.player1.controls.loadKeyBinds();
-		config.Config.configCheck();
+			PlayerSettings.player1.controls.loadKeyBinds();
+			config.Config.configCheck();
+		}
 
 		#if sys
 		polymod.Polymod.init({
 			modRoot: "mods",
-			dirs: sys.FileSystem.readDirectory('./mods'),
+			dirs: [Assets.getText(Paths.text('modSelected')), 'global', 'Global'],
 			errorCallback: (e) ->
 			{
 				trace(e.message);
@@ -52,6 +56,8 @@ class TitleIntroText extends MusicBeatState
 					"songs" => "assets/songs",
 					"images" => "assets/images",
 					"data" => "assets/data",
+					"notes" => "assets/notes",
+					"characters" => "assets/characters",
 					"fonts" => "assets/fonts",
 					"sounds" => "assets/sounds",
 					"music" => "assets/music",
@@ -92,7 +98,7 @@ class TitleIntroText extends MusicBeatState
 		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0.8);
 		TitleScreen.titleMusic = "freakyMenu";
 
-		var http = new haxe.Http("https://raw.githubusercontent.com/504brandon/FUNKIN-FPS-REFLASHED/master/update.txt?token=GHSAT0AAAAAACC42UPSDIM2Z6J56PIUVOUSZEJR6GA");
+		var http = new haxe.Http("https://raw.githubusercontent.com/504brandon/FUNKIN-FPS-REFLASHED/master/update.txt");
 
 		http.onData = function(data:String)
 		{
@@ -127,7 +133,6 @@ class TitleIntroText extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
-		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
 		if (FlxG.keys.justPressed.F)
 		{
@@ -149,7 +154,7 @@ class TitleIntroText extends MusicBeatState
 			#end
 		}
 
-		if (pressedEnter)
+		if (pressedEnter || ModSelectState.idk)
 		{
 			skipIntro();
 		}

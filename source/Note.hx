@@ -38,6 +38,7 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+	public static var script:HScript;
 
 	public function new(_strumTime:Float, _noteData:Int, _type:String, ?_editor = false, ?_prevNote:Note, ?_sustainNote:Bool = false)
 	{
@@ -133,26 +134,6 @@ class Note extends FlxSprite
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 				antialiasing = true;
-
-				#if sys
-				if (type != "" || type != null)
-				{
-					var image:FlxAtlasFrames = null;
-
-					var script = new HScript('data/notes/$type');
-					if (!script.isBlank && script.expr != null)
-					{
-						script.interp.scriptObject = this;
-						script.interp.execute(script.expr);
-					}
-
-					script.callFunction('create', [image]);
-
-					if (image != null){
-						frames = image;
-					}
-				#end
-			}
 		}
 		switch (noteData)
 		{
@@ -203,82 +184,101 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 			}
 		}
-		if (type == "transparent")
+		#if sys
+		if (type != "" || type != null)
 		{
-			alpha = 0.35;
-		}
-	}
+			var note:Dynamic = this;
 
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
-
-		if (mustPress)
-		{
-			if (isSustainNote)
+			script = new HScript('notes/$type');
+			if (!script.isBlank && script.expr != null)
 			{
-				canBeHit = (strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 1
-					&& (prevNote == null ? true : prevNote.wasGoodHit));
+				script.interp.scriptObject = this;
+				script.setValue('note', note);
+				script.interp.execute(script.expr);
+			}
+
+			script.callFunction('create');
+		#end
+	}
+}
+
+		override function update(elapsed:Float)
+		{
+			super.update(elapsed);
+
+			#if sys
+				script.callFunction('update', [elapsed]);
+			#end
+
+			if (ID < 0 || noteData < 0)
+				kill();
+
+			if (mustPress)
+			{
+				if (isSustainNote)
+				{
+					canBeHit = (strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 1
+						&& (prevNote == null ? true : prevNote.wasGoodHit));
+				}
+				else
+				{
+					canBeHit = (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset);
+				}
+
+				if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+					tooLate = true;
 			}
 			else
 			{
-				canBeHit = (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-					&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset);
+				canBeHit = false;
+
+				if (strumTime <= Conductor.songPosition)
+				{
+					canBeHit = true;
+				}
 			}
 
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-				tooLate = true;
-		}
-		else
-		{
-			canBeHit = false;
+			// Glow note stuff.
 
-			if (strumTime <= Conductor.songPosition)
+			if (canBeHit && Config.noteGlow && !isSustainNote && animation.curAnim.name.contains("Scroll"))
 			{
-				canBeHit = true;
+				glow();
+			}
+
+			if (tooLate && !isSustainNote && !animation.curAnim.name.contains("Scroll"))
+			{
+				idle();
 			}
 		}
 
-		// Glow note stuff.
-
-		if (canBeHit && Config.noteGlow && !isSustainNote && !editor && animation.curAnim.name.contains("Scroll"))
+		public function glow()
 		{
-			glow();
+			switch (noteData)
+			{
+				case 2:
+					animation.play('green glow');
+				case 3:
+					animation.play('red glow');
+				case 1:
+					animation.play('blue glow');
+				case 0:
+					animation.play('purple glow');
+			}
 		}
 
-		if (tooLate && !isSustainNote && !editor && !animation.curAnim.name.contains("Scroll"))
+		public function idle()
 		{
-			idle();
+			switch (noteData)
+			{
+				case 2:
+					animation.play('greenScroll');
+				case 3:
+					animation.play('redScroll');
+				case 1:
+					animation.play('blueScroll');
+				case 0:
+					animation.play('purpleScroll');
+			}
 		}
-	}
-
-	public function glow()
-	{
-		switch (noteData)
-		{
-			case 2:
-				animation.play('green glow');
-			case 3:
-				animation.play('red glow');
-			case 1:
-				animation.play('blue glow');
-			case 0:
-				animation.play('purple glow');
-		}
-	}
-
-	public function idle()
-	{
-		switch (noteData)
-		{
-			case 2:
-				animation.play('greenScroll');
-			case 3:
-				animation.play('redScroll');
-			case 1:
-				animation.play('blueScroll');
-			case 0:
-				animation.play('purpleScroll');
-		}
-	}
 }

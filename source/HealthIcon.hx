@@ -20,7 +20,7 @@ class HealthIcon extends FlxSprite
 
 	private static final pixelIcons:Array<String> = ["bf-pixel", "senpai", "senpai-angry", "spirit"];
 
-	public function new(_character:String = 'face', _isPlayer:Bool = false, ?_id:Int = -1)
+	public function new(_character:String = 'face', _isPlayer:Bool = false)
 	{
 		super();
 
@@ -31,8 +31,6 @@ class HealthIcon extends FlxSprite
 		setIconCharacter(character);
 
 		iconSize = width;
-
-		id = _id;
 		
 		scrollFactor.set();
 

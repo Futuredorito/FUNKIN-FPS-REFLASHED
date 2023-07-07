@@ -47,7 +47,7 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 
-	public static var jsonParseShit:FreeplayJsonShit;
+	public static var songParseShit:FreeplayJsonShit;
 	public static var speed:Float = 1;
 
 	override function create()
@@ -72,10 +72,20 @@ class FreeplayState extends MusicBeatState
 
 		addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
-		jsonParseShit = Json.parse(Assets.getText(Paths.json('freeplaySongList')));
+		if (Assets.exists(Paths.json('freeplaySongList')))
+		{
+			songParseShit = Json.parse(Assets.getText(Paths.json('freeplaySongList')));
 
-		for (songs in jsonParseShit.songs)
-			addSong(songs.song, songs.week, songs.icon);
+			for (songs in songParseShit.songs)
+				addSong(songs.song, songs.week, songs.icon);
+		}
+		else if (Assets.exists(Paths.xml('FreeplaySongList', 'data')))
+		{
+			songParseShit = CoolUtil.parseXML(Assets.getText(Paths.xml('freeplaySongList', 'data')));
+
+			for (songs in songParseShit.songs)
+				addSong(songs.song, songs.week, songs.icon);
+		}
 
 		// LOAD CHARACTERS
 
@@ -92,7 +102,7 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i;
 			grpSongs.add(songText);
 
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter, i);
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
@@ -181,16 +191,19 @@ class FreeplayState extends MusicBeatState
 				changeDiff(1);
 		}
 
-		if (FlxG.keys.pressed.SHIFT){
-			if (controls.LEFT_P){
+		if (FlxG.keys.pressed.SHIFT)
+		{
+			if (controls.LEFT_P)
+			{
 				speed -= 0.5;
-				
+
 				if (speed < 0.5)
 					speed = 0.5;
 
 				FlxG.sound.music.pitch = speed;
 			}
-			if (controls.RIGHT_P){
+			if (controls.RIGHT_P)
+			{
 				speed += 0.5;
 
 				if (speed > 10)

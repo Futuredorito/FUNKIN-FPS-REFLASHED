@@ -13,14 +13,12 @@ class Stage extends FlxTypedGroup<FlxBasic>
 		super();
 
 		#if sys
-		script = new HScript('assets/stages/$stage');
+		script = new HScript('stages/$stage');
 
 		if (!script.isBlank && script.expr != null)
 		{
 			script.interp.scriptObject = state;
-			script.setValue("yooo", true);
             script.setValue("add", add);
-			script.setValue("insert", insert);
 			script.setValue("remove", remove);
 			script.interp.execute(script.expr);
 		}
