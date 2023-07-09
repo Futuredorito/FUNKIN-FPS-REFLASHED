@@ -15,7 +15,7 @@ function create()
 	character.addOffset("singDOWN", 92, -77);
 	character.addOffset("singLEFTmiss", 82, 27);
 	character.addOffset("singUP", 20, 29);
-	character.vaddOffset("idle", 0, 0);
+	character.addOffset("idle", 0, 0);
 	character.addOffset("singDOWNmiss", 86, -37);
 	character.addOffset("singRIGHT", -46, 1);
 	character.addOffset("singLEFT", 86, -11);
@@ -23,7 +23,7 @@ function create()
 
 	character.playAnim('idle');
 
-	//character.facesLeft = true;
+	character.facesLeft = true;
 
     character.characterColor = 0xFFB7D855;
 }

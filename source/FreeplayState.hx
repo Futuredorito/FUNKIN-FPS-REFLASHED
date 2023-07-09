@@ -1,6 +1,5 @@
 package;
 
-import openfl.media.SoundMixer;
 import openfl.Assets;
 import haxe.Json;
 import flixel.FlxG;
@@ -14,16 +13,17 @@ using StringTools;
 
 typedef FreeplaySongShit =
 {
-	var song:String;
-	var icon:String;
+	var songs:Array<String>;
+	var icons:Array<String>;
 	var diffs:Array<String>;
-	var color:FlxColor;
+	var colors:Array<FlxColor>;
 	var week:Int;
 }
 
 typedef FreeplayJsonShit =
 {
-	var songs:Array<FreeplaySongShit>;
+	var weeks:Array<FreeplaySongShit>;
+	var baseGameSongs:Bool;
 }
 
 class FreeplayState extends MusicBeatState
@@ -56,38 +56,31 @@ class FreeplayState extends MusicBeatState
 
 		curSelected = 0;
 
-		songs.push(new SongMetadata("Tutorial", 1, 'gf-menu'));
-
-		addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
-
-		addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', "monster"]);
-
-		addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
-
-		addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
-
-		addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents', 'parents', 'monster']);
-
-		addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai-angry', 'spirit']);
-
-		addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
-
-		if (Assets.exists(Paths.json('freeplaySongList')))
+		if (Assets.exists(Paths.json('songList')))
 		{
-			songParseShit = Json.parse(Assets.getText(Paths.json('freeplaySongList')));
+			songParseShit = Json.parse(Assets.getText(Paths.json('songList')));
 
-			for (songs in songParseShit.songs)
-				addSong(songs.song, songs.week, songs.icon);
-		}
-		else if (Assets.exists(Paths.xml('FreeplaySongList', 'data')))
-		{
-			songParseShit = CoolUtil.parseXML(Assets.getText(Paths.xml('freeplaySongList', 'data')));
+			if (songParseShit.baseGameSongs)
+			{
+				var baseSongParseShit:FreeplayJsonShit = Json.parse(Assets.getText(Paths.json('baseSongList')));
 
-			for (songs in songParseShit.songs)
-				addSong(songs.song, songs.week, songs.icon);
+				for (i => songs in baseSongParseShit.weeks)
+				{
+					trace(songs);
+
+					addSong(songs.songs[i], songs.week, songs.icons[i], songs.colors[i], songs.diffs);
+				}
+			}
+
+			for (i => songs in songParseShit.weeks)
+			{
+				trace(songs);
+
+				addSong(songs.songs[i], songs.week, songs.icons[i], songs.colors[i], songs.diffs);
+			}
 		}
 
-		// LOAD CHARACTERS
+		trace(songs);
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menu/menuBGBlue'));
 		add(bg);
@@ -130,30 +123,14 @@ class FreeplayState extends MusicBeatState
 		add(scoreText);
 
 		changeSelection(startingSelection);
-		changeDiff();
 		FlxG.sound.music.pitch = speed;
 
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, songColor:FlxColor, songDiffs:Array<String>)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter));
-	}
-
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
-	{
-		if (songCharacters == null)
-			songCharacters = ['bf'];
-
-		var num:Int = 0;
-		for (song in songs)
-		{
-			addSong(song, weekNum, songCharacters[num]);
-
-			if (songCharacters.length != 1)
-				num++;
-		}
+		songs.push(new SongMetadata(songName, weekNum, songCharacter, songColor, songDiffs));
 	}
 
 	override function update(elapsed:Float)
@@ -222,11 +199,10 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), songs[curSelected].songDiffs[curDifficulty]);
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
-			PlayState.storyDifficulty = curDifficulty;
-			PlayState.storyDifficultyString = diffText.text.toLowerCase();
+			PlayState.storyDifficulty = songs[curSelected].songDiffs[curDifficulty];
 			PlayState.loadEvents = true;
 			startingSelection = curSelected;
 			PlayState.returnLocation = "freeplay";
@@ -235,30 +211,6 @@ class FreeplayState extends MusicBeatState
 			switchState(new PlayState());
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.stop();
-		}
-	}
-
-	function changeDiff(change:Int = 0)
-	{
-		curDifficulty += change;
-
-		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
-			curDifficulty = 0;
-
-		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		#end
-
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "EASY";
-			case 1:
-				diffText.text = 'NORMAL';
-			case 2:
-				diffText.text = "HARD";
 		}
 	}
 
@@ -273,11 +225,11 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		// selector.y = (70 * curSelected) + 30;
+		Sys.println(songs[curSelected].songDiffs);
+		changeDiff();
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		// lerpScore = 0;
+		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].songDiffs[curDifficulty]);
 		#end
 
 		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
@@ -310,6 +262,22 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 	}
+
+	function changeDiff(change:Int = 0)
+	{
+		curDifficulty += change;
+
+		if (curDifficulty < 0)
+			curDifficulty = songs[curSelected].songDiffs.length - 1;
+		if (curDifficulty > songs[curSelected].songDiffs.length - 1)
+			curDifficulty = 0;
+
+		#if !switch
+		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].songDiffs[curDifficulty]);
+		#end
+
+		diffText.text = songs[curSelected].songDiffs[curDifficulty].toUpperCase();
+	}
 }
 
 class SongMetadata
@@ -317,11 +285,15 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var songColor:FlxColor;
+	public var songDiffs:Array<String>;
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, songColor:FlxColor, songDiffs:Array<String>)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+		this.songColor = songColor;
+		this.songDiffs = songDiffs;
 	}
 }

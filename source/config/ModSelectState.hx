@@ -4,10 +4,12 @@ import openfl.Assets;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.util.FlxColor;
+#if sys
 import sys.FileSystem;
+import sys.io.File;
+#end
 import flixel.text.FlxText;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import sys.io.File;
 
 using StringTools;
 
@@ -30,7 +32,7 @@ class ModSelectState extends MusicBeatState
 		else
 			mods = ['no mods are detected'];
 		#else
-			mods = ['this wont work because you arent on a supported platform'];
+		mods = ['this wont work because you arent on a supported platform'];
 		#end
 
 		for (shit in mods)
@@ -113,9 +115,9 @@ class ModSelectState extends MusicBeatState
 
 	function acceptShi(modString:String)
 	{
+		#if sys
 		File.saveBytes('./' + Paths.text('modSelected'), haxe.io.Bytes.ofString(modString));
-
-		trace(Assets.getText(Paths.text('modSelected')));
+		#end
 
 		idk = true;
 

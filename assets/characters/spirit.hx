@@ -21,4 +21,7 @@ function create()
 	character.antialiasing = false;
 
     character.characterColor = 0xFFFF3C6E;
+
+	var evilTrail = new DeltaTrail(character, null, 10, 3 / 60, 0.4);
+	PlayState.instance.add(evilTrail);
 }

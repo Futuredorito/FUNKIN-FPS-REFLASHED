@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="FPS PLUS - REFLASHED" file="FunkinPlus" main="Main" version="FNF: v0.2.7|FPS Plus: v4.0|FPS Plus Reflashed: v0.0 (alpha build)" company="504brandon" />
+	<app title="FPS PLUS - REFLASHED" file="FunkinPlus" main="Main" version="FNF: v0.2.7|FPS Plus: v4.0|0.0.1" company="504brandon" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -105,13 +105,5 @@
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	<icon path="art/iconOG.png" />
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
-
-
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<!--haxedef name="NG_LOGIN" if="newgrounds" /-->
-	
+	<icon path="iconOG.png" />	
 </project>

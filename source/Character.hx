@@ -181,7 +181,9 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		#if sys
 		script.callFunction('update', [elapsed]);
+		#end
 
 		if (!debugMode)
 		{
@@ -250,7 +252,9 @@ class Character extends FlxSprite
 	 */
 	public function dance(?ignoreDebug:Bool = false)
 	{
+		#if sys
 		script.callFunction('dance');
+		#end
 
 		if (!debugMode || ignoreDebug)
 		{
@@ -342,7 +346,9 @@ class Character extends FlxSprite
 
 	function animationEnd(name:String)
 	{
+		#if sys
 		script.callFunction('animationEnd', [name]);
+		#end
 		danceLockout = false;
 
 		switch (curCharacter)

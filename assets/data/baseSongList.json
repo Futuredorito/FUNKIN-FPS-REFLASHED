@@ -1,0 +1,69 @@
+{
+    "": "ngl i think this system sucks but it works",
+    "weeks": [
+        {
+            "songs": ["Tutorial"],
+            "chars": ["dad", "bf", "gf"],
+            "icons": ["gf-menu"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 1,
+            "weekName": "Tutorial"
+        },
+        {
+            "songs": ["Bopeebo", "Fresh", "Dadbattle"],
+            "chars": ["dad", "bf", "gf"],
+            "icons": ["dad", "dad", "dad"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 1,
+            "weekName": "Daddy Dearest"
+        },
+        {
+            "songs": ["Spookeez", "South", "Monster"],
+            "chars": ["spooky", "bf", "gf"],
+            "icons": ["spooky", "spooky", "monster"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 2,
+            "weekName": "Spooky Month"
+        },
+        {
+            "songs": ["Pico", "Philly", "Blammed"],
+            "chars": ["pico", "bf", "gf"],
+            "icons": ["pico", "pico", "pico"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 3,
+            "weekName": "PICO"
+        },
+        {
+            "songs": ["Satin-panties", "High", "Mlif"],
+            "chars": ["mom", "bf", "gf"],
+            "icons": ["mom", "mom", "mom"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 4,
+            "weekName": "MOMMY MUST MURDER"
+        },
+        {
+            "songs": ["Cocoa", "Eggnog", "Winter-horrorland"],
+            "chars": ["parents-christmas", "bf", "gf"],
+            "icons": ["parents", "parents", "parents"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 5,
+            "weekName": "RED SNOW"
+        },
+        {
+            "songs": ["Senpai", "Roses", "Thorns"],
+            "chars": ["senpai", "bf", "gf"],
+            "icons": ["senpai", "senapi-angry", "spirit"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 6,
+            "weekName": "hating simulator ft. moawling"
+        },
+        {
+            "songs": ["Ugh", "Guns", "Stress"],
+            "chars": ["tankman", "bf", "gf"],
+            "icons": ["tankman", "tankman", "tankman"],
+            "diffs": ["easy", "normal", "hard"],
+            "week": 7,
+            "weekName": "TANKMAN"
+        }
+    ]
+}

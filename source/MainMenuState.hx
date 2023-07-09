@@ -82,8 +82,13 @@ class MainMenuState extends MusicBeatState
 
 		var versionText = new FlxText(5, FlxG.height - 65, 0, '', 16);
 
-		for (version in Application.current.meta.get('version').split('|'))
-			versionText.text += '\n' + version;
+		for (i => version in Application.current.meta.get('version').split('|'))
+		{
+			if (i == 2)
+				versionText.text += '\n' + 'FPS REFLASHED V:' + Application.current.meta.get('version').split('|')[2];
+			else
+				versionText.text += '\n' + version;
+		}
 
 		versionText.scrollFactor.set();
 		versionText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
