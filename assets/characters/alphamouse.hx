@@ -17,5 +17,5 @@ function create()
 	character.facesLeft = true;
 
 	character.iconName = "face";
-    character.characterColor = 0xFF31B0D1;
+    	character.characterColor = 0xFF31B0D1;
 }
