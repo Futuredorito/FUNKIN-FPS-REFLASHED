@@ -170,10 +170,6 @@ class PlayState extends MusicBeatState
 
 	var dialogue:Array<String> = [':bf:strange code', ':dad:>:]'];
 
-	var limo:FlxSprite;
-	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
-	var fastCar:FlxSprite;
-
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
 	var santa:FlxSprite;
@@ -417,41 +413,7 @@ class PlayState extends MusicBeatState
 			stageCheck = SONG.stage;
 		}
 
-		if (stageCheck == 'limo')
-		{
-			curStage = 'limo';
-			defaultCamZoom = 0.90;
-
-			var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image("week4/limo/limoSunset"));
-			skyBG.scrollFactor.set(0.1, 0.1);
-			add(skyBG);
-
-			var bgLimo:FlxSprite = new FlxSprite(-200, 480);
-			bgLimo.frames = Paths.getSparrowAtlas("week4/limo/bgLimo");
-			bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
-			bgLimo.animation.play('drive');
-			bgLimo.scrollFactor.set(0.4, 0.4);
-			add(bgLimo);
-
-			grpLimoDancers = new FlxTypedGroup<BackgroundDancer>();
-			add(grpLimoDancers);
-
-			for (i in 0...5)
-			{
-				var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, bgLimo.y - 400);
-				dancer.scrollFactor.set(0.4, 0.4);
-				grpLimoDancers.add(dancer);
-			}
-
-			limo = new FlxSprite(-120, 550);
-			limo.frames = Paths.getSparrowAtlas("week4/limo/limoDrive");
-			limo.animation.addByPrefix('drive', "Limo stage", 24);
-			limo.animation.play('drive');
-			limo.antialiasing = true;
-
-			fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image("week4/limo/fastCarLol"));
-		}
-		else if (stageCheck == 'mall')
+		if (stageCheck == 'mall')
 		{
 			curStage = 'mall';
 
@@ -809,13 +771,6 @@ class PlayState extends MusicBeatState
 		// REPOSITIONING PER STAGE
 		switch (curStage)
 		{
-			case 'limo':
-				boyfriend.y -= 220;
-				boyfriend.x += 260;
-
-				resetFastCar();
-				add(fastCar);
-
 			case 'mall':
 				boyfriend.x += 200;
 
@@ -864,11 +819,6 @@ class PlayState extends MusicBeatState
 					tankmanRun.add(tankman);
 				}
 			}
-		}
-
-		if (curStage == 'limo')
-		{
-			add(limo);
 		}
 
 		dads.add(dad);
@@ -1145,6 +1095,11 @@ class PlayState extends MusicBeatState
 		for (i in scripts)
 			i.callFunction('createPost');
 		#end
+
+		if (stage != null)
+		{
+			stage.createPost();
+		}
 	}
 
 	function updateAccuracy()
@@ -1988,7 +1943,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			PlayerSettings.menuControls();
-			switchState(new ChartingState());
+			switchState(new editors.ChartEditor());
 			sectionStart = false;
 			// FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
 			// FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyUp);
@@ -2028,21 +1983,24 @@ class PlayState extends MusicBeatState
 		{
 			PlayerSettings.menuControls();
 			sectionStart = false;
-			// FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-			// FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyUp);
 
-			if (FlxG.keys.pressed.SHIFT)
-			{
-				switchState(new AnimationDebug(SONG.player1));
-			}
-			else if (FlxG.keys.pressed.CONTROL)
-			{
-				switchState(new AnimationDebug(gf.curCharacter));
-			}
-			else
-			{
-				switchState(new AnimationDebug(SONG.player2));
-			}
+			switchState(new editors.CharEditor(dad.curCharacter));
+		}
+
+		if (FlxG.keys.justPressed.NINE)
+		{
+			PlayerSettings.menuControls();
+			sectionStart = false;
+
+			switchState(new editors.CharEditor(gf.curCharacter));
+		}
+
+		if (FlxG.keys.justPressed.ZERO)
+		{
+			PlayerSettings.menuControls();
+			sectionStart = false;
+
+			switchState(new editors.CharEditor(boyfriend.curCharacter));
 		}
 
 		if (startingSong)
@@ -3106,28 +3064,6 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	var fastCarCanDrive:Bool = true;
-
-	function resetFastCar():Void
-	{
-		fastCar.x = -12600;
-		fastCar.y = FlxG.random.int(140, 250);
-		fastCar.velocity.x = 0;
-		fastCarCanDrive = true;
-	}
-
-	function fastCarDrive()
-	{
-		FlxG.sound.play(Paths.sound('carPass' + FlxG.random.int(0, 1)), 0.7);
-
-		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
-		fastCarCanDrive = false;
-		new FlxTimer().start(2, function(tmr:FlxTimer)
-		{
-			resetFastCar();
-		});
-	}
-
 	function moveTank():Void
 	{
 		if (!inCutscene)
@@ -3257,15 +3193,6 @@ class PlayState extends MusicBeatState
 					upperBoppers.animation.play('bop', true);
 					bottomBoppers.animation.play('bop', true);
 					santa.animation.play('idle', true);
-
-				case "limo":
-					grpLimoDancers.forEach(function(dancer:BackgroundDancer)
-					{
-						dancer.dance();
-					});
-
-					if (FlxG.random.bool(10) && fastCarCanDrive)
-						fastCarDrive();
 			}
 		}
 	}

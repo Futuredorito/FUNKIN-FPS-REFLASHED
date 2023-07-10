@@ -1,9 +1,9 @@
-package;
+package editors;
 
+import flixel.ui.FlxButton;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 import Song.SongEvents;
-import openfl.media.SoundChannel;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
@@ -11,34 +11,25 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
-import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
-import flixel.ui.FlxButton;
-import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
 import haxe.Json;
-import lime.utils.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.media.Sound;
 import openfl.net.FileReference;
-import openfl.utils.ByteArray;
 
 using StringTools;
 
-class ChartingState extends MusicBeatState
+class ChartEditor extends MusicBeatState
 {
 	var _file:FileReference;
 
@@ -128,8 +119,16 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
-
 		openfl.Lib.current.stage.frameRate = 120;
+
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menu/menuDesat'));
+		bg.scrollFactor.set(0, 0);
+		bg.setGraphicSize(Std.int(bg.width * 1.18));
+		bg.updateHitbox();
+		bg.screenCenter();
+		bg.antialiasing = true;
+		bg.color = 0xFF5C6CA5;
+		add(bg);
 
 		var controlInfo = new FlxText(10, 30, 0, "LEFT CLICK - Place Notes\nRIGHT CLICK - Delete Notes\nMIDDLE CLICK - Reselect a note.\n\nSHIFT - Unlock cursor from grid\nALT - Triplets\nCONTROL - 1/32 Notes\nSHIFT + CONTROL - 1/64 Notes\n\nTAB - Place notes on both sides\nHJKL - Place notes during\n                       playback\n\nR - Top of section\nCTRL + R - Song start\n\nENTER - Test chart.\nCTRL + ENTER - Test chart from\n                         current section.", 12);
 		controlInfo.scrollFactor.set();
@@ -727,12 +726,6 @@ class ChartingState extends MusicBeatState
 		// general shit
 		var title:FlxText = new FlxText(UI_box.x + 20, UI_box.y + 20, 0);
 		bullshitUI.add(title);
-		/* 
-			var loopCheck = new FlxUICheckBox(UI_box.x + 10, UI_box.y + 50, null, null, "Loops", 100, ['loop check']);
-			loopCheck.checked = curNoteSelected.doesLoop;
-			tooltips.add(loopCheck, {title: 'Section looping', body: "Whether or not it's a simon says style section", style: tooltipType});
-			bullshitUI.add(loopCheck);
-		 */
 	}
 
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
@@ -1015,23 +1008,7 @@ class ChartingState extends MusicBeatState
 		{
 			changeNoteSustain(-Conductor.stepCrochet);
 		}
-
-		/*if (FlxG.keys.justPressed.TAB)
-		{
-			if (FlxG.keys.pressed.SHIFT)
-			{
-				UI_box.selected_tab -= 1;
-				if (UI_box.selected_tab < 0)
-					UI_box.selected_tab = 2;
-			}
-			else
-			{
-				UI_box.selected_tab += 1;
-				if (UI_box.selected_tab >= 3)
-					UI_box.selected_tab = 0;
-			}
-		}*/
-
+		
 		if (!typingShit.hasFocus)
 		{
 			if (FlxG.keys.justPressed.SPACE)
@@ -1733,24 +1710,6 @@ class ChartingState extends MusicBeatState
 		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 	}
 
-	/*
-		function calculateSectionLengths(?sec:SwagSection):Int
-		{
-			var daLength:Int = 0;
-			for (i in _song.notes)
-			{
-				var swagLength = i.lengthInSteps;
-				if (i.typeOfSection == Section.COPYCAT)
-					swagLength * 2;
-				daLength += swagLength;
-				if (sec != null && sec == i)
-				{
-					trace('swag loop??');
-					break;
-				}
-			}
-			return daLength;
-	}*/
 	private var daSpacing:Float = 0.3;
 
 	function loadLevel():Void

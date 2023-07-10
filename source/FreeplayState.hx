@@ -64,23 +64,23 @@ class FreeplayState extends MusicBeatState
 			{
 				var baseSongParseShit:FreeplayJsonShit = Json.parse(Assets.getText(Paths.json('baseSongList')));
 
-				for (i => songs in baseSongParseShit.weeks)
-				{
-					trace(songs);
-
-					addSong(songs.songs[i], songs.week, songs.icons[i], songs.colors[i], songs.diffs);
-				}
+				for (songs in baseSongParseShit.weeks)
+					for (i => song in songs.songs)
+						addSong(song, songs.week, songs.icons[i], FlxColor.BLACK, songs.diffs);
 			}
 
-			for (i => songs in songParseShit.weeks)
-			{
-				trace(songs);
-
-				addSong(songs.songs[i], songs.week, songs.icons[i], songs.colors[i], songs.diffs);
-			}
+			for (songs in songParseShit.weeks)
+				for (i => song in songs.songs)
+					addSong(song, songs.week, songs.icons[i], FlxColor.BLACK, songs.diffs);
 		}
+		else
+		{
+			songParseShit = Json.parse(Assets.getText(Paths.json('baseSongList')));
 
-		trace(songs);
+			for (songs in songParseShit.weeks)
+				for (i => song in songs.songs)
+					addSong(song, songs.week, songs.icons[i], FlxColor.BLACK, songs.diffs);
+		}
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menu/menuBGBlue'));
 		add(bg);
@@ -225,7 +225,6 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		Sys.println(songs[curSelected].songDiffs);
 		changeDiff();
 
 		#if !switch

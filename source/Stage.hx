@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxState;
 import haxe.Json;
 import openfl.Assets;
 import flixel.FlxSprite;
@@ -48,7 +49,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 
 	public static var objects:FlxTypedGroup<FlxSprite>;
 
-	override public function new(stageString:String, state:PlayState)
+	override public function new(stageString:String, state:FlxState)
 	{
 		super();
 
@@ -69,6 +70,12 @@ class Stage extends FlxTypedGroup<FlxBasic>
 			script.interp.execute(script.expr);
 		}
 		script.callFunction("create");
+		#end
+	}
+
+	public function createPost(){
+		#if sys
+		script.callFunction("createPost");
 		#end
 	}
 

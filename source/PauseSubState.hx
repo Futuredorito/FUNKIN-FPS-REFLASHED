@@ -2,7 +2,6 @@ package;
 
 import flixel.tweens.FlxTween;
 import config.*;
-
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -13,7 +12,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', "Options",'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', "Options", 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -25,28 +24,21 @@ class PauseSubState extends MusicBeatSubstate
 		openfl.Lib.current.stage.frameRate = 144;
 
 		FlxTween.globalManager.active = false;
-		
-		if (PlayState.storyPlaylist.length > 1 && PlayState.isStoryMode){
-			menuItems.insert(2, "Skip Song");
-		}
-		
-		if (!PlayState.isStoryMode){
-			menuItems.insert(2, "Chart Editor");
-		}
-
-		if (!PlayState.isStoryMode && PlayState.sectionStart){
-			menuItems.insert(1, "Restart Section");
-		}
 
 		var pauseSongName = "breakfast";
 
-		switch(PlayState.SONG.song.toLowerCase()){
+		switch (PlayState.SONG.song.toLowerCase())
+		{
 			case "ugh" | "guns" | "stress":
 				pauseSongName = "distorto";
 		}
 
+		#if mobile
+		menuItems.push('Chart Editor');
+		#end
+
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music(pauseSongName), true, true);
-		
+
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
 
@@ -93,8 +85,8 @@ class PauseSubState extends MusicBeatSubstate
 			changeSelection(1);
 		}
 
-		if (accepted){
-
+		if (accepted)
+		{
 			FlxTween.globalManager.active = true;
 
 			var daSelected:String = menuItems[curSelected];
@@ -103,44 +95,34 @@ class PauseSubState extends MusicBeatSubstate
 			{
 				case "Resume":
 					unpause();
-					
+
 				case "Restart Song":
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyDown);
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyUp);
 					FlxTween.globalManager.clear();
 					PlayState.instance.switchState(new PlayState());
 					PlayState.sectionStart = false;
 
-				case "Restart Section":
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyDown);
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyUp);
-					FlxTween.globalManager.clear();
-					PlayState.instance.switchState(new PlayState());
-
+				#if mobile
 				case "Chart Editor":
 					PlayerSettings.menuControls();
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyDown);
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyUp);
 					FlxTween.globalManager.clear();
-					PlayState.instance.switchState(new ChartingState());
-					
+					PlayState.instance.switchState(new editors.ChartEditor());
+				#end
+
 				case "Skip Song":
 					FlxTween.globalManager.clear();
 					PlayState.instance.endSong();
-					
+
 				case "Options":
 					FlxTween.globalManager.clear();
 					PlayState.instance.switchState(new ConfigMenu());
 					ConfigMenu.exitTo = PlayState;
-					
-				case "Exit to menu":
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyDown);
-					//FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, PlayState.instance.keyUp);
-					FlxTween.globalManager.clear();
 
+				case "Exit to menu":
+					FlxTween.globalManager.clear();
 					PlayState.sectionStart = false;
 
-					switch(PlayState.returnLocation){
+					switch (PlayState.returnLocation)
+					{
 						case "freeplay":
 							PlayState.instance.switchState(new FreeplayState());
 						case "story":
@@ -148,13 +130,13 @@ class PauseSubState extends MusicBeatSubstate
 						default:
 							PlayState.instance.switchState(new MainMenuState());
 					}
-					
 			}
 		}
 	}
 
-	function unpause(){
-		if(Config.noFpsCap)
+	function unpause()
+	{
+		if (Config.noFpsCap)
 			openfl.Lib.current.stage.frameRate = 999;
 		close();
 	}
