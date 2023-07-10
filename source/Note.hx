@@ -198,87 +198,87 @@ class Note extends FlxSprite
 			}
 
 			script.callFunction('create');
+		}
 		#end
 	}
-}
 
-		override function update(elapsed:Float)
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		#if sys
+		script.callFunction('update', [elapsed]);
+		#end
+
+		if (ID < 0 || noteData < 0)
+			kill();
+
+		if (mustPress)
 		{
-			super.update(elapsed);
-
-			#if sys
-				script.callFunction('update', [elapsed]);
-			#end
-
-			if (ID < 0 || noteData < 0)
-				kill();
-
-			if (mustPress)
+			if (isSustainNote)
 			{
-				if (isSustainNote)
-				{
-					canBeHit = (strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 1
-						&& (prevNote == null ? true : prevNote.wasGoodHit));
-				}
-				else
-				{
-					canBeHit = (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset);
-				}
-
-				if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-					tooLate = true;
+				canBeHit = (strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 1
+					&& (prevNote == null ? true : prevNote.wasGoodHit));
 			}
 			else
 			{
-				canBeHit = false;
-
-				if (strumTime <= Conductor.songPosition)
-				{
-					canBeHit = true;
-				}
+				canBeHit = (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+					&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset);
 			}
 
-			// Glow note stuff.
-
-			if (canBeHit && Config.noteGlow && !isSustainNote && animation.curAnim.name.contains("Scroll"))
-			{
-				glow();
-			}
-
-			if (tooLate && !isSustainNote && !animation.curAnim.name.contains("Scroll"))
-			{
-				idle();
-			}
+			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+				tooLate = true;
 		}
-
-		public function glow()
+		else
 		{
-			switch (noteData)
+			canBeHit = false;
+
+			if (strumTime <= Conductor.songPosition)
 			{
-				case 2:
-					animation.play('green glow');
-				case 3:
-					animation.play('red glow');
-				case 1:
-					animation.play('blue glow');
-				case 0:
-					animation.play('purple glow');
+				canBeHit = true;
 			}
 		}
 
-		public function idle()
+		// Glow note stuff.
+
+		if (canBeHit && Config.noteGlow && !isSustainNote && animation.curAnim.name.contains("Scroll"))
 		{
-			switch (noteData)
-			{
-				case 2:
-					animation.play('greenScroll');
-				case 3:
-					animation.play('redScroll');
-				case 1:
-					animation.play('blueScroll');
-				case 0:
-					animation.play('purpleScroll');
-			}
+			glow();
 		}
+
+		if (tooLate && !isSustainNote && !animation.curAnim.name.contains("Scroll"))
+		{
+			idle();
+		}
+	}
+
+	public function glow()
+	{
+		switch (noteData)
+		{
+			case 2:
+				animation.play('green glow');
+			case 3:
+				animation.play('red glow');
+			case 1:
+				animation.play('blue glow');
+			case 0:
+				animation.play('purple glow');
+		}
+	}
+
+	public function idle()
+	{
+		switch (noteData)
+		{
+			case 2:
+				animation.play('greenScroll');
+			case 3:
+				animation.play('redScroll');
+			case 1:
+				animation.play('blueScroll');
+			case 0:
+				animation.play('purpleScroll');
+		}
+	}
 }

@@ -50,7 +50,7 @@ class ConfigMenu extends MusicBeatState
 
 	final settingText:Array<String> = [
 		"NOTE OFFSET", "UNCAPPED FRAMERATE", "ALLOW GHOST TAPPING", "HP GAIN MULTIPLIER", "HP DRAIN MULTIPLIER", "DOWNSCROLL",
-		"NOTE GLOW", "COMBO DISPLAY", "NOTE SPLASH", "UI TYPE", "BACKGROUND DIM", "CONTROLLER SCHEME", "[EDIT KEY BINDS]", "MODS"
+		"NOTE GLOW", "COMBO DISPLAY", "NOTE SPLASH", "UI TYPE", "BACKGROUND DIM", "CONTROLLER SCHEME", "[EDIT KEY BINDS]"
 	];
 
 	// Any descriptions that say TEMP are replaced with a changing description based on the current config setting.
@@ -63,13 +63,12 @@ class ConfigMenu extends MusicBeatState
 		"Modifies how much Health you lose when missing a note.",
 		"Makes notes appear from the top instead the bottom.",
 		"Makes note arrows glow if they are able to be hit.",
+		"TEMP",
+		"TEMP",
 		"Makes the ui look cool uwu",
-		"TEMP",
-		"TEMP",
 		"Adjusts how dark the background is.\nIt is recommended that you use the HUD combo display with a high background dim.",
 		"TEMP",
-		"Change key binds.",
-		"CHOOSE WHAT MOD YOU WANT PRESS\nENTER TO CHOOSE"
+		"Change key binds."
 	];
 
 	final ghostTapDesc:Array<String> = [
@@ -141,7 +140,7 @@ class ConfigMenu extends MusicBeatState
 		dimValue = Config.bgDim;
 		noteSplashValue = Config.noteSplashType;
 
-		var tex = Paths.getSparrowAtlas('menu/FNF_main_menu_assets');
+		var tex = Paths.getSparrowAtlas('menu/options/FNF_main_menu_assets');
 		var optionTitle:FlxSprite = new FlxSprite(0, 55);
 		optionTitle.frames = tex;
 		optionTitle.animation.addByPrefix('selected', "options white", 24);
@@ -498,14 +497,6 @@ class ConfigMenu extends MusicBeatState
 						canChangeItems = false;
 						writeToConfig();
 						switchState(new KeyBindMenu());
-					}
-
-				case 13:
-					if (controls.ACCEPT)
-					{
-						canChangeItems = false;
-						writeToConfig();
-						switchState(new ModSelectState());
 					}
 			}
 		}

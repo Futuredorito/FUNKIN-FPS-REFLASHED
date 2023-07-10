@@ -1,5 +1,6 @@
 package title;
 
+import lime.app.Application;
 import config.ModSelectState;
 import config.Config;
 import flixel.FlxG;
@@ -102,7 +103,11 @@ class TitleIntroText extends MusicBeatState
 
 		http.onData = function(data:String)
 		{
-			trace(data.split('\n')[0].trim());
+			if (data.split('\n')[0].trim() != Application.current.meta.get('version').split('|')[2]){ 
+				trace(Application.current.meta.get('version').split('|')[2] + " aint the right version the right version is " + data.split('\n')[0].trim());
+
+				FlxG.switchState(new OutdatedState());
+			}
 		}
 
 		http.onError = function(error)

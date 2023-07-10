@@ -1,34 +1,17 @@
 {
-    "image": "week1/DADDY_DEAREST",
-    "iconColor": "#AF66CE",
-    "anims": [
-        {
-            "anim": "idle",
-            "prefix": "Dad idle dance"
-        },
-        {
-            "anim": "singUP",
-            "prefix": "Dad Sing Note UP",
-            "x": -9,
-            "y": 50
-        },
-        {
-            "anim": "singDOWN",
-            "prefix": "Dad Sing Note DOWN",
-            "x": 2,
-            "y": -32
-        },
-        {
-            "anim": "singLEFT",
-            "prefix": "Dad Sing Note LEFT",
-            "x": -11,
-            "y": 10
-        },
-        {
-            "anim": "singRIGHT",
-            "prefix": "Dad Sing Note RIGHT",
-            "x": -4,
-            "y": 16
-        }
-    ]
+  "iconColor": "#AF66CE",
+  "image": "week1/DADDY_DEAREST",
+  "deathCharacter": "bf",
+  "x": null,
+  "y": null,
+  "flipX": false,
+  "flipY": false,
+  "anims": [
+    { "x": 0, "prefix": "Dad idle dance", "y": 0, "anim": "idle" },
+    { "x": -4, "prefix": "Dad Sing Note UP", "y": 26, "anim": "singUP" },
+    { "x": 0, "prefix": "Dad Sing Note DOWN", "y": -30, "anim": "singDOWN" },
+    { "x": -9, "prefix": "Dad Sing Note LEFT", "y": 50, "anim": "singLEFT" },
+    { "x": -8, "prefix": "Dad Sing Note RIGHT", "y": 9, "anim": "singRIGHT" }
+  ],
+  "iconName": "dad"
 }

@@ -1,17 +1,18 @@
 package;
 
+import flixel.FlxG;
 import Conductor.BPMChangeEvent;
 
 class MusicBeatState extends UIStateExt
 {
-	private var lastBeat:Float = 0;
-	private var lastStep:Float = 0;
+	public var lastBeat:Float = 0;
+	public var lastStep:Float = 0;
 
-	private var totalBeats:Int = 0;
-	private var totalSteps:Int = 0;
+	public var totalBeats:Int = 0;
+	public var totalSteps:Int = 0;
 
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
+	public var curStep:Int = 0;
+	public var curBeat:Int = 0;
 
 	override function create()
 	{
@@ -29,7 +30,7 @@ class MusicBeatState extends UIStateExt
 		super.update(elapsed);
 	}
 
-	private function updateBeat():Void
+	function updateBeat():Void
 	{
 		curBeat = Math.round(curStep / 4);
 	}
@@ -37,7 +38,7 @@ class MusicBeatState extends UIStateExt
 	/**
 	 * CHECKS EVERY FRAME
 	 */
-	private function everyStep():Void
+	function everyStep():Void
 	{
 		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
 			|| Conductor.songPosition < lastStep + Conductor.safeZoneOffset)
@@ -49,7 +50,7 @@ class MusicBeatState extends UIStateExt
 		}
 	}
 
-	private function updateCurStep():Void
+	function updateCurStep():Void
 	{
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,

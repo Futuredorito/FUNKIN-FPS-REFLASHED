@@ -52,11 +52,4 @@ class CoolUtil
 	{
 		return FlxMath.lerp(a, b, fpsAdjust(ratio));
 	}
-	
-	/**
-		because xml is dum dum
-	 */
-	static public function parseXML(str:String):Dynamic {
-		return haxe.xml.Parser.parse(str);
-	}
 }

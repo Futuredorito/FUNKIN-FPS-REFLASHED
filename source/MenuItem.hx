@@ -2,9 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
 class MenuItem extends FlxSpriteGroup
@@ -13,10 +11,10 @@ class MenuItem extends FlxSpriteGroup
 	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
 
-	public function new(x:Float, y:Float, weekNum:Int = 0)
+	public function new(x:Float, y:Float, img:String = 'week1')
 	{
 		super(x, y);
-		week = new FlxSprite().loadGraphic(Paths.image('menu/story/weeks/week' + weekNum));
+		week = new FlxSprite().loadGraphic(Paths.image('menu/story/weeks/' + img));
 		add(week);
 	}
 
@@ -42,7 +40,7 @@ class MenuItem extends FlxSpriteGroup
 			flashingInt += 1;
 
 		if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2))
-			week.color = 0xFF33ffff;
+			week.color = FlxColor.CYAN;
 		else
 			week.color = FlxColor.WHITE;
 	}

@@ -4,10 +4,12 @@ import openfl.Assets;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.util.FlxColor;
+#if sys
 import sys.FileSystem;
+import sys.io.File;
+#end
 import flixel.text.FlxText;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import sys.io.File;
 
 using StringTools;
 
@@ -17,7 +19,7 @@ class ModSelectState extends MusicBeatState
 	var selected:Int = 0;
 	var mods:Array<String> = [];
 	var forbiddenMods:Array<String> = [
-		'global', 'Global', '.txt', '.json', '.git', '.hx', '.hxs', '.html', '.xml', '.yml'
+		'global', 'Global', '.txt', '.json', '.git', '.hx', '.hxs', '.html', '.xml', '.yml', '.zip'
 	];
 
 	public static var idk:Bool;
@@ -30,7 +32,7 @@ class ModSelectState extends MusicBeatState
 		else
 			mods = ['no mods are detected'];
 		#else
-			mods = ['this wont work because you arent on a supported platform'];
+		mods = ['this wont work because you arent on a supported platform'];
 		#end
 
 		for (shit in mods)
@@ -53,10 +55,10 @@ class ModSelectState extends MusicBeatState
 		bg.color = 0xFF5C6CA5;
 		add(bg);
 
-		var tex = Paths.getSparrowAtlas('menu/FNF_mod_menu_assets');
+		var tex = Paths.getSparrowAtlas('menu/options/mods');
 		var holyShitModsFnf:FlxSprite = new FlxSprite(0, 55);
 		holyShitModsFnf.frames = tex;
-		holyShitModsFnf.animation.addByPrefix('selected', "mod white", 24);
+		holyShitModsFnf.animation.addByPrefix('selected', "mods white", 24);
 		holyShitModsFnf.animation.play('selected');
 		holyShitModsFnf.scrollFactor.set();
 		holyShitModsFnf.antialiasing = true;
@@ -113,9 +115,9 @@ class ModSelectState extends MusicBeatState
 
 	function acceptShi(modString:String)
 	{
+		#if sys
 		File.saveBytes('./' + Paths.text('modSelected'), haxe.io.Bytes.ofString(modString));
-
-		trace(Assets.getText(Paths.text('modSelected')));
+		#end
 
 		idk = true;
 

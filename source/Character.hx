@@ -81,37 +81,6 @@ class Character extends FlxSprite
 		}
 
 		script.callFunction('create');
-
-		if (script.isBlank || script.expr == null)
-		{
-			if (!Assets.exists(Paths.json(curCharacter, 'characters')))
-				charJson = Json.parse(Assets.getText(Paths.json('dad', 'characters')));
-			else
-				charJson = Json.parse(Assets.getText(Paths.json(curCharacter, 'characters')));
-
-			frames = Paths.getSparrowAtlas(charJson.image);
-
-			for (anim in charJson.anims)
-			{
-				if (anim.fps < 0)
-					anim.fps = 24;
-
-				animation.addByPrefix(anim.anim, anim.prefix, anim.fps, false);
-
-				addOffset(anim.anim, anim.x, anim.y);
-			}
-
-			stepsUntilRelease = 6.1;
-
-			if (charJson.iconName != null)
-				iconName = charJson.iconName;
-			if (charJson.iconColor != null)
-				characterColor = FlxColor.fromString(charJson.iconColor);
-			if (charJson.deathCharacter != null)
-				deathCharacter = charJson.deathCharacter;
-			facesLeft = charJson.flipX;
-			flipY = charJson.flipY;
-		}
 		#else
 		if (!Assets.exists(Paths.json(curCharacter, 'characters')))
 			charJson = Json.parse(Assets.getText(Paths.json('dad', 'characters')));
@@ -181,7 +150,9 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		#if sys
 		script.callFunction('update', [elapsed]);
+		#end
 
 		if (!debugMode)
 		{
@@ -250,7 +221,9 @@ class Character extends FlxSprite
 	 */
 	public function dance(?ignoreDebug:Bool = false)
 	{
+		#if sys
 		script.callFunction('dance');
+		#end
 
 		if (!debugMode || ignoreDebug)
 		{
@@ -317,7 +290,7 @@ class Character extends FlxSprite
 
 	function changeOffsets()
 	{
-		if (animOffsets.exists(animation.curAnim.name))
+		if (animation.curAnim != null && animation.curAnim.name != null && animOffsets.exists(animation.curAnim.name))
 		{
 			var animOffset = animOffsets.get(animation.curAnim.name);
 			var xOffsetAdjust:Float = animOffset[0];
@@ -342,7 +315,9 @@ class Character extends FlxSprite
 
 	function animationEnd(name:String)
 	{
+		#if sys
 		script.callFunction('animationEnd', [name]);
+		#end
 		danceLockout = false;
 
 		switch (curCharacter)
@@ -374,5 +349,36 @@ class Character extends FlxSprite
 			case "pico-speaker":
 				playAnim(animation.curAnim.name, false, false, animation.curAnim.numFrames - 3);
 		}
+	}
+
+	public function loadByJson(char:String)
+	{
+		if (!Assets.exists(Paths.json(char, 'characters')))
+			charJson = Json.parse(Assets.getText(Paths.json('dad', 'characters')));
+		else
+			charJson = Json.parse(Assets.getText(Paths.json(char, 'characters')));
+
+		frames = Paths.getSparrowAtlas(charJson.image);
+
+		for (anim in charJson.anims)
+		{
+			if (anim.fps < 0)
+				anim.fps = 24;
+
+			animation.addByPrefix(anim.anim, anim.prefix, anim.fps, false);
+
+			addOffset(anim.anim, anim.x, anim.y);
+		}
+
+		stepsUntilRelease = 6.1;
+
+		if (charJson.iconName != null)
+			iconName = charJson.iconName;
+		if (charJson.iconColor != null)
+			characterColor = FlxColor.fromString(charJson.iconColor);
+		if (charJson.deathCharacter != null)
+			deathCharacter = charJson.deathCharacter;
+		facesLeft = charJson.flipX;
+		flipY = charJson.flipY;
 	}
 }
