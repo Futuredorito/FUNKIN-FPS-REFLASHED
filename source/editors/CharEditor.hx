@@ -285,15 +285,14 @@ class CharEditor extends FlxState
 		var x:Array<Float> = [];
 		var y:Array<Float> = [];
 
-		for (anim in animList)
+		for (animOffset in animList)
 		{
-			x.push(this.char.animOffsets.get(anim)[0]);
-			y.push(this.char.animOffsets.get(anim)[1]);
-		}
-
-		for (i => anim in char.anims){
-			anim.x = x[i];
-			anim.y = y[i];
+			for (anim in char.anims) {
+				if (anim.anim == animOffset){
+					anim.x = this.char.animOffsets.get(animOffset)[0];
+					anim.y = this.char.animOffsets.get(animOffset)[1];
+				}
+			}
 		}
 
 		trace(x);
@@ -319,8 +318,6 @@ class CharEditor extends FlxState
 	}
 
 	function addShitIntoTheTabs() {
-		
-		
 		var saveChar = new FlxButton(10, 30, 'Save Character', function() {
 			saveChar();
 		});
