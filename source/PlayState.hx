@@ -1415,8 +1415,12 @@ class PlayState extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
-		if (!paused)
-			FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
+		if (!paused){
+			if (Assets.exists(Paths.inst(SONG.song + '-' + storyDifficulty)))
+				FlxG.sound.playMusic(Paths.inst(SONG.song + '-' + storyDifficulty), 1, false);
+			else
+				FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
+		}
 
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
@@ -1452,7 +1456,10 @@ class PlayState extends MusicBeatState
 
 		if (SONG.needsVoices)
 		{
-			vocals = new FlxSound().loadEmbedded(Paths.voices(curSong));
+			if (Assets.exists(Paths.voices(SONG.song + '-' + storyDifficulty)))
+				vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song + '-' + storyDifficulty));
+			else
+				vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
 		}
 		else
 			vocals = new FlxSound();
@@ -1945,8 +1952,33 @@ class PlayState extends MusicBeatState
 			PlayerSettings.menuControls();
 			switchState(new editors.ChartEditor());
 			sectionStart = false;
-			// FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-			// FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyUp);
+		}
+
+		if (Config.debug)
+		{
+			if (FlxG.keys.justPressed.EIGHT)
+			{
+				PlayerSettings.menuControls();
+				sectionStart = false;
+
+				switchState(new editors.CharEditor(dad.curCharacter));
+			}
+
+			if (FlxG.keys.justPressed.NINE)
+			{
+				PlayerSettings.menuControls();
+				sectionStart = false;
+
+				switchState(new editors.CharEditor(gf.curCharacter));
+			}
+
+			if (FlxG.keys.justPressed.ZERO)
+			{
+				PlayerSettings.menuControls();
+				sectionStart = false;
+
+				switchState(new editors.CharEditor(boyfriend.curCharacter));
+			}
 		}
 
 		var iconOffset:Int = 26;
@@ -1974,33 +2006,6 @@ class PlayState extends MusicBeatState
 		{
 			iconP1.animation.curAnim.curFrame = 0;
 			iconP2.animation.curAnim.curFrame = 0;
-		}
-
-		/* if (FlxG.keys.justPressed.NINE)
-			switchState(new Charting()); */
-
-		if (FlxG.keys.justPressed.EIGHT)
-		{
-			PlayerSettings.menuControls();
-			sectionStart = false;
-
-			switchState(new editors.CharEditor(dad.curCharacter));
-		}
-
-		if (FlxG.keys.justPressed.NINE)
-		{
-			PlayerSettings.menuControls();
-			sectionStart = false;
-
-			switchState(new editors.CharEditor(gf.curCharacter));
-		}
-
-		if (FlxG.keys.justPressed.ZERO)
-		{
-			PlayerSettings.menuControls();
-			sectionStart = false;
-
-			switchState(new editors.CharEditor(boyfriend.curCharacter));
 		}
 
 		if (startingSong)

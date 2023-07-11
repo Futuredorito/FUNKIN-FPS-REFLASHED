@@ -1,5 +1,6 @@
 package editors;
 
+import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUITabMenu;
 import haxe.Json;
@@ -34,15 +35,20 @@ class CharEditor extends FlxState
 	var curAnim:Int = 0;
 	var ischar:Bool = true;
 	var daAnim:String = 'dad';
-	var camFollow:FlxObject;
+	var switchBack:String = 'PlayState';
 
+	var camFollow:FlxObject;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
-	public function new(daAnim:String = 'dad')
+	var hpBar:FlxSprite;
+	var hpBarFill:FlxSprite;
+
+	public function new(daAnim:String = 'dad', switchBack:String = 'PlayState')
 	{
 		super();
 		this.daAnim = daAnim;
+		this.switchBack = switchBack;
 	}
 
 	override function create()
@@ -96,9 +102,9 @@ class CharEditor extends FlxState
 		];
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
-		UI_box.resize(300, 400);
-		UI_box.x = 830;
-		UI_box.y = 20;
+		UI_box.resize(300, 300);
+		UI_box.x = 870;
+		UI_box.y = 320;
 		UI_box.cameras = [camHUD];
 		add(UI_box);
 
@@ -150,11 +156,6 @@ class CharEditor extends FlxState
 			FlxG.camera.zoom += 0.0025;
 		if (FlxG.keys.pressed.Q)
 			FlxG.camera.zoom -= 0.0025;
-
-		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
-		{
-			copyOffsetToClipboard();
-		}
 
 		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 		{
@@ -208,7 +209,14 @@ class CharEditor extends FlxState
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			FlxG.switchState(new PlayState());
+			switch (switchBack)
+			{
+				case 'editors':
+					FlxG.switchState(new EditorMenu());
+
+				case 'PlayState':
+					FlxG.switchState(new PlayState());
+			}
 		}
 
 		var upP = FlxG.keys.anyJustPressed([UP]);
@@ -282,21 +290,17 @@ class CharEditor extends FlxState
 			"deathCharacter": char.charJson.deathCharacter
 		};
 
-		var x:Array<Float> = [];
-		var y:Array<Float> = [];
-
 		for (animOffset in animList)
 		{
-			for (anim in char.anims) {
-				if (anim.anim == animOffset){
+			for (anim in char.anims)
+			{
+				if (anim.anim == animOffset)
+				{
 					anim.x = this.char.animOffsets.get(animOffset)[0];
 					anim.y = this.char.animOffsets.get(animOffset)[1];
 				}
 			}
 		}
-
-		trace(x);
-		trace(y);
 
 		if (char.flipX != true && char.flipX != false)
 			char.flipX = false;
@@ -317,15 +321,50 @@ class CharEditor extends FlxState
 		}
 	}
 
-	function addShitIntoTheTabs() {
-		var saveChar = new FlxButton(10, 30, 'Save Character', function() {
+	function addShitIntoTheTabs()
+	{
+		var charUI = new FlxUI(null, UI_box);
+		charUI.name = 'Character';
+
+		var saveChar = new FlxButton(10, 30, 'Save Character', function()
+		{
 			saveChar();
 		});
 		saveChar.cameras = [camHUD];
-		
-		var charUI = new FlxUI(null, UI_box);
-		charUI.name = 'Character';
 		charUI.add(saveChar);
+
+		var is_Player = new FlxUICheckBox(saveChar.x, saveChar.y - 20, null, null, 'is Player');
+		is_Player.checked = daAnim.contains('player') || daAnim.contains('bf');
+		is_Player.callback = function()
+		{
+			charBG.kill();
+			char.kill();
+
+			charBG = new Character(0, 0, daAnim, is_Player.checked, true);
+			charBG.screenCenter();
+			charBG.alpha = 0.75;
+			charBG.color = 0xFF000000;
+			charBG.playAnim('idle');
+			add(charBG);
+
+			char = new Character(0, 0, daAnim, is_Player.checked, true);
+			char.screenCenter();
+			char.charJson.flipX = is_Player.checked;
+			char.playAnim('idle');
+			add(char);
+
+			updateTexts();
+			genBoyOffsets(false);
+		};
+		charUI.add(is_Player);
+
+		hpBar = new FlxSprite(is_Player.x - 110, is_Player.y + 210).loadGraphic(Paths.image('ui/healthBar'));
+		hpBar.scale.x = 0.3;
+		charUI.add(hpBar);
+
+		hpBarFill = new FlxSprite(hpBar.x + 211.64, hpBar.y + 5).makeGraphic(177, 9, char.characterColor);
+		charUI.add(hpBarFill);
+
 		UI_box.addGroup(charUI);
 	}
 }

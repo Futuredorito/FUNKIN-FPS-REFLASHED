@@ -17,6 +17,7 @@ class Config
 	public static var controllerScheme:Int;
 	public static var bgDim:Int;
 	public static var noteSplashType:Int;
+	public static var debug:Bool;
 
 	public static function resetSettings():Void{
 
@@ -32,6 +33,7 @@ class Config
 		FlxG.save.data.controllerScheme = 0;
 		FlxG.save.data.bgDim = 0;
 		FlxG.save.data.noteSplashType = 0;
+		FlxG.save.data.debug = false;
 		reload();
 
 	}
@@ -50,6 +52,7 @@ class Config
 		controllerScheme = FlxG.save.data.controllerScheme;
 		bgDim = FlxG.save.data.bgDim;
 		noteSplashType = FlxG.save.data.noteSplashType;
+		debug = FlxG.save.data.debug;
 	}
 	
 	public static function write(
@@ -64,7 +67,8 @@ class Config
 								noFpsCapW:Bool,
 								controllerSchemeW:Int,
 								bgDimW:Int,
-								noteSplashTypeW:Int
+								noteSplashTypeW:Int,
+								debugW:Bool
 								):Void
 	{
 
@@ -80,6 +84,7 @@ class Config
 		FlxG.save.data.controllerScheme = controllerSchemeW;
 		FlxG.save.data.bgDim = bgDimW;
 		FlxG.save.data.noteSplashType = noteSplashTypeW;
+		FlxG.save.data.debug = debugW;
 
 		FlxG.save.flush();
 		
@@ -112,6 +117,8 @@ class Config
 			FlxG.save.data.bgDim = 0;
 		if(FlxG.save.data.noteSplashType == null)
 			FlxG.save.data.noteSplashType = 1;
+		if (FlxG.save.data.debug == null)
+			FlxG.save.data.debug = false;
 
 		if(FlxG.save.data.ee1 == null)
 			FlxG.save.data.ee1 = false;

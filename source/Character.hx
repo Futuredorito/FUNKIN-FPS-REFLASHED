@@ -54,7 +54,7 @@ class Character extends FlxSprite
 	public var characterColor:Null<FlxColor> = null;
 	public var charJson:CharacterLoading;
 
-	var facesLeft:Bool = false;
+	public var facesLeft:Bool = false;
 
 	var script:HScript;
 
@@ -116,7 +116,7 @@ class Character extends FlxSprite
 
 		dance();
 
-		if (((facesLeft && !isPlayer) || (!facesLeft && isPlayer)) && !debugMode)
+		if (((facesLeft && !isPlayer) || (!facesLeft && isPlayer)))
 		{
 			flipX = true;
 

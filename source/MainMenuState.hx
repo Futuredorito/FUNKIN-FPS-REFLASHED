@@ -92,14 +92,7 @@ class MainMenuState extends MusicBeatState
 		versionText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionText);
 
-		var keyWarning = new FlxText(5, FlxG.height - 21 + 16, 0, "If your controls aren't working, try pressing BACKSPACE to reset them.", 16);
-		keyWarning.scrollFactor.set();
-		keyWarning.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		keyWarning.alpha = 0;
-		add(keyWarning);
-
 		FlxTween.tween(versionText, {y: versionText.y - 16}, 0.75, {ease: FlxEase.quintOut, startDelay: 10});
-		FlxTween.tween(keyWarning, {alpha: 1, y: keyWarning.y - 16}, 0.75, {ease: FlxEase.quintOut, startDelay: 10});
 
 		changeItem();
 
@@ -142,6 +135,9 @@ class MainMenuState extends MusicBeatState
 			{
 				switchState(new TitleScreen());
 			}
+
+			if (FlxG.keys.justPressed.SEVEN && Config.debug)
+				FlxG.switchState(new editors.EditorMenu());
 
 			if (controls.ACCEPT)
 			{

@@ -39,6 +39,7 @@ class ConfigMenu extends MusicBeatState
 	var dimValue:Int;
 	var noteSplashValue:Int;
 	var noteSplashTypes:Array<String> = ["off", "sick only", "always"];
+	var debugValue:Bool;
 
 	var tabKeys:Array<String> = [];
 
@@ -50,7 +51,7 @@ class ConfigMenu extends MusicBeatState
 
 	final settingText:Array<String> = [
 		"NOTE OFFSET", "UNCAPPED FRAMERATE", "ALLOW GHOST TAPPING", "HP GAIN MULTIPLIER", "HP DRAIN MULTIPLIER", "DOWNSCROLL",
-		"NOTE GLOW", "COMBO DISPLAY", "NOTE SPLASH", "UI TYPE", "BACKGROUND DIM", "CONTROLLER SCHEME", "[EDIT KEY BINDS]"
+		"NOTE GLOW", "COMBO DISPLAY", "NOTE SPLASH", "UI TYPE", "BACKGROUND DIM", "CONTROLLER SCHEME", "[EDIT KEY BINDS]", "DEBUG"
 	];
 
 	// Any descriptions that say TEMP are replaced with a changing description based on the current config setting.
@@ -65,10 +66,11 @@ class ConfigMenu extends MusicBeatState
 		"Makes note arrows glow if they are able to be hit.",
 		"TEMP",
 		"TEMP",
-		"Makes the ui look cool uwu",
+		"Choose your UI.",
 		"Adjusts how dark the background is.\nIt is recommended that you use the HUD combo display with a high background dim.",
 		"TEMP",
-		"Change key binds."
+		"Change key binds.",
+		"Enable Debug."
 	];
 
 	final ghostTapDesc:Array<String> = [
@@ -140,7 +142,7 @@ class ConfigMenu extends MusicBeatState
 		dimValue = Config.bgDim;
 		noteSplashValue = Config.noteSplashType;
 
-		var tex = Paths.getSparrowAtlas('menu/options/FNF_main_menu_assets');
+		var tex = Paths.getSparrowAtlas('menu/options/options');
 		var optionTitle:FlxSprite = new FlxSprite(0, 55);
 		optionTitle.frames = tex;
 		optionTitle.animation.addByPrefix('selected', "options white", 24);
@@ -163,7 +165,6 @@ class ConfigMenu extends MusicBeatState
 		descText.scrollFactor.set(0, 0);
 		descText.setFormat(Paths.font("vcr"), descText.textField.defaultTextFormat.size, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE,
 			FlxColor.BLACK);
-		// descText.borderSize = 3;
 		descText.borderQuality = 1;
 
 		tabDisplay = new FlxText(5, FlxG.height - 53, 0, Std.string(tabKeys), 16);
@@ -498,6 +499,11 @@ class ConfigMenu extends MusicBeatState
 						writeToConfig();
 						switchState(new KeyBindMenu());
 					}
+				case 13:
+					if (controls.ACCEPT){
+						debugValue = !debugValue;
+						writeToConfig();
+					}
 			}
 		}
 		else if (FlxG.keys.pressed.TAB)
@@ -626,6 +632,8 @@ class ConfigMenu extends MusicBeatState
 				return ": " + (dimValue * 10) + "%";
 			case 11:
 				return ": " + controlSchemes[scheme];
+			case 13:
+				return ": " + debugValue;
 		}
 
 		return "";
@@ -652,13 +660,13 @@ class ConfigMenu extends MusicBeatState
 		switch (combo)
 		{
 			case "KADE":
-				Config.write(offsetValue, "complex", 5, 5, 1, downValue, false, 2, noCapValue, scheme, dimValue, noteSplashValue);
+				Config.write(offsetValue, "complex", 5, 5, 1, downValue, false, 2, noCapValue, scheme, dimValue, noteSplashValue, debugValue);
 				exit();
 			case "ROZE":
-				Config.write(offsetValue, "simple", 1, 1, 0, true, true, 0, noCapValue, scheme, dimValue, noteSplashValue);
+				Config.write(offsetValue, "simple", 1, 1, 0, true, true, 0, noCapValue, scheme, dimValue, noteSplashValue, debugValue);
 				exit();
 			case "CVAL":
-				Config.write(offsetValue, "simple", 1, 1, comboValue, false, glowValue, 1, noCapValue, scheme, dimValue, noteSplashValue);
+				Config.write(offsetValue, "simple", 1, 1, comboValue, false, glowValue, 1, noCapValue, scheme, dimValue, noteSplashValue, debugValue);
 				exit();
 			case "GOTOHELLORSOMETHING":
 				System.exit(0); // I am very funny.
@@ -668,6 +676,6 @@ class ConfigMenu extends MusicBeatState
 	function writeToConfig()
 	{
 		Config.write(offsetValue, uiType, healthValue / 10.0, healthDrainValue / 10.0, comboValue, downValue, glowValue, randomTapValue,
-			noCapValue, scheme, dimValue, noteSplashValue);
+			noCapValue, scheme, dimValue, noteSplashValue, debugValue);
 	}
 }

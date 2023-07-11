@@ -7,11 +7,11 @@
   "flipX": false,
   "flipY": false,
   "anims": [
-    { "x": 0, "prefix": "Dad idle dance", "y": 0, "anim": "idle" },
-    { "x": -5, "prefix": "Dad Sing Note UP", "y": 27, "anim": "singUP" },
-    { "x": 0, "prefix": "Dad Sing Note DOWN", "y": -30, "anim": "singDOWN" },
-    { "x": -9, "prefix": "Dad Sing Note LEFT", "y": 51, "anim": "singLEFT" },
-    { "x": -9, "prefix": "Dad Sing Note RIGHT", "y": 10, "anim": "singRIGHT" }
+    { "prefix": "Dad idle dance", "x": 0, "anim": "idle", "y": 0 },
+    { "prefix": "Dad Sing Note UP", "x": -9, "anim": "singUP", "y": 52 },
+    { "prefix": "Dad Sing Note DOWN", "x": 0, "anim": "singDOWN", "y": -30 },
+    { "prefix": "Dad Sing Note LEFT", "x": -9, "anim": "singLEFT", "y": 11 },
+    { "prefix": "Dad Sing Note RIGHT", "x": -4, "anim": "singRIGHT", "y": 29 }
   ],
   "iconName": "dad"
 }

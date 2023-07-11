@@ -231,7 +231,7 @@ class ChartEditor extends MusicBeatState
 		else
 		{
 			_song = {
-				song: 'Test',
+				song: 'Bopeebo',
 				notes: [],
 				bpm: 150,
 				needsVoices: true,

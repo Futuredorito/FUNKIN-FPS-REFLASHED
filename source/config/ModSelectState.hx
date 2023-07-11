@@ -101,6 +101,8 @@ class ModSelectState extends MusicBeatState
 	{
 		modText.members[selected].setFormat(Paths.font("Funkin-Bold", "otf"), modText.members[selected].textField.defaultTextFormat.size, FlxColor.WHITE,
 			FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		modText.members[selected].borderSize = 3;
+		modText.members[selected].borderQuality = 1;
 
 		selected += int;
 
@@ -111,6 +113,9 @@ class ModSelectState extends MusicBeatState
 
 		modText.members[selected].setFormat(Paths.font("Funkin-Bold", "otf"), modText.members[selected].textField.defaultTextFormat.size, FlxColor.YELLOW,
 			FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+		modText.members[selected].borderSize = 3;
+		modText.members[selected].borderQuality = 1;
 	}
 
 	function acceptShi(modString:String)
