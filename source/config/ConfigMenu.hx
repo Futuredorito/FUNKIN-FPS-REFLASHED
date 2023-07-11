@@ -501,8 +501,8 @@ class ConfigMenu extends MusicBeatState
 					}
 				case 13:
 					if (controls.ACCEPT){
+						FlxG.sound.play(Paths.sound('scrollMenu'));
 						debugValue = !debugValue;
-						writeToConfig();
 					}
 			}
 		}

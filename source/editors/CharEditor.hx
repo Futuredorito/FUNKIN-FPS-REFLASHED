@@ -41,9 +41,6 @@ class CharEditor extends FlxState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
-	var hpBar:FlxSprite;
-	var hpBarFill:FlxSprite;
-
 	public function new(daAnim:String = 'dad', switchBack:String = 'PlayState')
 	{
 		super();
@@ -358,13 +355,13 @@ class CharEditor extends FlxState
 		};
 		charUI.add(is_Player);
 
-		hpBar = new FlxSprite(is_Player.x - 110, is_Player.y + 210).loadGraphic(Paths.image('ui/healthBar'));
+		var hpBar = new FlxSprite(is_Player.x - 110, is_Player.y + 210).loadGraphic(Paths.image('ui/healthBar'));
 		hpBar.scale.x = 0.3;
 		charUI.add(hpBar);
 
-		hpBarFill = new FlxSprite(hpBar.x + 211.64, hpBar.y + 5).makeGraphic(177, 9, char.characterColor);
+		var hpBarFill = new FlxSprite(hpBar.x + 211.64, hpBar.y + 5).makeGraphic(177, 9, char.characterColor);
 		charUI.add(hpBarFill);
-
+		
 		UI_box.addGroup(charUI);
 	}
 }
