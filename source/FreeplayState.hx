@@ -172,7 +172,7 @@ class FreeplayState extends MusicBeatState
 		{
 			if (controls.LEFT_P)
 			{
-				speed -= 0.5;
+				speed -= 0.1;
 
 				if (speed < 0.5)
 					speed = 0.5;
@@ -181,10 +181,10 @@ class FreeplayState extends MusicBeatState
 			}
 			if (controls.RIGHT_P)
 			{
-				speed += 0.5;
+				speed += 0.1;
 
-				if (speed > 10)
-					speed = 10;
+				if (speed > 3)
+					speed = 3;
 
 				FlxG.sound.music.pitch = speed;
 			}

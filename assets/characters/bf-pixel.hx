@@ -10,6 +10,8 @@ function create()
 	character.animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
 	character.animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
 	character.animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
+	character.animation.addByPrefix('scared', 'BF SPOOK', 24, false);
+	character.animation.addByPrefix('hey', 'BF HEY!!', 24, false);
 
 	character.addOffset('idle');
 	character.addOffset("singUP", -6);

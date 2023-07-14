@@ -9,7 +9,7 @@ import title.TitleScreen;
 class CreditsMenu extends MusicBeatState
 {
 	private var grpCredits:FlxTypedGroup<Alphabet>;
-	var credits:Array<String> = ['504brandon', 'Bam'];
+	var credits:Array<String> = ['504brandon', 'Bam', "Losky"]; //losky made the custom week 6 stuff
     override public function create():Void
     {
 		openfl.Lib.current.stage.frameRate = 144;
