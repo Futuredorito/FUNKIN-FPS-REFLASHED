@@ -22,7 +22,7 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'options'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'options', 'credits'];
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -152,6 +152,8 @@ class MainMenuState extends MusicBeatState
 						FlxG.sound.music.stop();
 					case 'options':
 						FlxG.sound.music.stop();
+					case 'credits':
+						FlxG.sound.music.stop();
 				}
 
 				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
@@ -190,6 +192,9 @@ class MainMenuState extends MusicBeatState
 
 								case 'options':
 									switchState(new ConfigMenu());
+
+								case 'credits':
+									switchState(new CreditsMenu());
 							}
 						});
 					}
