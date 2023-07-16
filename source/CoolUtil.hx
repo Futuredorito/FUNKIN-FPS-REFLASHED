@@ -52,4 +52,10 @@ class CoolUtil
 	{
 		return FlxMath.lerp(a, b, fpsAdjust(ratio));
 	}
+
+	public static inline function parseJSON(jsonText:String):Dynamic
+    {
+        var parsedData:Dynamic = haxe.Json.parse(jsonText);
+        return parsedData;
+    }
 }
