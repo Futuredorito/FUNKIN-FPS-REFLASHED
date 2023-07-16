@@ -14,6 +14,7 @@ typedef AnimLoading =
 	var anim:String;
 	var x:Float;
 	var y:Float;
+	var looped:Bool;
 	var fps:Int;
 }
 
@@ -27,14 +28,15 @@ typedef CharacterLoading =
 	var iconName:String;
 	var deathCharacter:String;
 	var iconColor:String;
+	var hasWinningIcon:Bool;
 	var anims:Array<AnimLoading>;
 }
 
 class Character extends FlxSprite
 {
 	// Global character properties.
-	public static var LOOP_ANIM_ON_HOLD:Bool = true; // Determines whether hold notes will loop the sing animation. Default is true.
-	public static var USE_IDLE_END:Bool = true; // Determines whether you will go back to the start of the idle or the end of the idle when letting go of a note. Default is true for FPS Plus, false for base game.
+	public var LOOP_ANIM_ON_HOLD:Bool = true; // Determines whether hold notes will loop the sing animation. Default is true.
+	public var USE_IDLE_END:Bool = true; // Determines whether you will go back to the start of the idle or the end of the idle when letting go of a note. Default is true for FPS Plus, false for base game.
 
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
@@ -55,6 +57,7 @@ class Character extends FlxSprite
 	public var charJson:CharacterLoading;
 
 	public var facesLeft:Bool = false;
+	public var hasWinningIcons:Bool = true;
 
 	var script:HScript;
 
@@ -78,37 +81,13 @@ class Character extends FlxSprite
 			script.interp.scriptObject = this;
 			script.setValue('character', character);
 			script.interp.execute(script.expr);
+		}else{
+			loadByJson('dad');
 		}
 
 		script.callFunction('create');
 		#else
-		if (!Assets.exists(Paths.json(curCharacter, 'characters')))
-			charJson = Json.parse(Assets.getText(Paths.json('dad', 'characters')));
-		else
-			charJson = Json.parse(Assets.getText(Paths.json(curCharacter, 'characters')));
-
-		frames = Paths.getSparrowAtlas(charJson.image);
-
-		for (anim in charJson.anims)
-		{
-			if (anim.fps < 0)
-				anim.fps = 24;
-
-			animation.addByPrefix(anim.anim, anim.prefix, anim.fps, false);
-
-			addOffset(anim.anim, anim.x, anim.y);
-		}
-
-		stepsUntilRelease = 6.1;
-
-		if (charJson.iconName != null)
-			iconName = charJson.iconName;
-		if (charJson.iconColor != null)
-			characterColor = FlxColor.fromString(charJson.iconColor);
-		if (charJson.deathCharacter != null)
-			deathCharacter = charJson.deathCharacter;
-		facesLeft = charJson.flipX;
-		flipY = charJson.flipY;
+		loadByJson('dad');
 		#end
 
 		if (iconName == null)
@@ -364,8 +343,10 @@ class Character extends FlxSprite
 		{
 			if (anim.fps < 0)
 				anim.fps = 24;
+			if (anim.looped != true && anim.looped != false)
+				anim.looped = false;
 
-			animation.addByPrefix(anim.anim, anim.prefix, anim.fps, false);
+			animation.addByPrefix(anim.anim, anim.prefix, anim.fps, anim.looped);
 
 			addOffset(anim.anim, anim.x, anim.y);
 		}
@@ -378,6 +359,7 @@ class Character extends FlxSprite
 			characterColor = FlxColor.fromString(charJson.iconColor);
 		if (charJson.deathCharacter != null)
 			deathCharacter = charJson.deathCharacter;
+		hasWinningIcons = charJson.hasWinningIcon;
 		facesLeft = charJson.flipX;
 		flipY = charJson.flipY;
 	}

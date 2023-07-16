@@ -184,8 +184,8 @@ class ChartEditor extends MusicBeatState
 		add(gridBGOverlay);
 		
 
-		leftIcon = new HealthIcon('bf');
-		rightIcon = new HealthIcon('dad');
+		leftIcon = new HealthIcon('bf', true, true);
+		rightIcon = new HealthIcon('dad', false, true);
 
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);

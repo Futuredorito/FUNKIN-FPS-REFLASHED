@@ -365,11 +365,9 @@ class StoryMenuState extends MusicBeatState
 	{
 		curDifficulty += change;
 
-		trace(weekDiffs[curWeek].length);
-
 		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
+			curDifficulty = Std.int(weekDiffs[curWeek].length - 1);
+		if (curDifficulty > Std.int(weekDiffs[curWeek].length - 1))
 			curDifficulty = 0;
 
 		sprDifficulty.kill();

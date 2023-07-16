@@ -19,14 +19,17 @@ class HealthIcon extends FlxSprite
 	private var tween:FlxTween;
 
 	private static final pixelIcons:Array<String> = ["bf-pixel", "senpai", "senpai-angry", "spirit"];
+	public var hasWinning:Bool;
 
-	public function new(_character:String = 'face', _isPlayer:Bool = false)
+	public function new(_character:String = 'face', _isPlayer:Bool = false, _hasWinning:Bool)
 	{
 		super();
 
 		isPlayer = _isPlayer;
 
 		character = _character;
+		
+		hasWinning = _hasWinning;
 
 		setIconCharacter(character);
 
@@ -64,7 +67,10 @@ class HealthIcon extends FlxSprite
 		else
 			loadGraphic(Paths.image("ui/heathIcons/face"), true, 150, 150);
 
-		animation.add("icon", [0, 1, 2], 0, false, isPlayer);
+		if (!hasWinning)
+			animation.add("icon", [0, 1], 0, false, isPlayer);
+		else
+			animation.add("icon", [0, 1, 2], 0, false, isPlayer);
 		animation.play("icon");
 
 		antialiasing = !pixelIcons.contains(character);

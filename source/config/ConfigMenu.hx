@@ -141,6 +141,7 @@ class ConfigMenu extends MusicBeatState
 		scheme = Config.controllerScheme;
 		dimValue = Config.bgDim;
 		noteSplashValue = Config.noteSplashType;
+		debugValue = Config.debug;
 
 		var tex = Paths.getSparrowAtlas('menu/options/options');
 		var optionTitle:FlxSprite = new FlxSprite(0, 55);
@@ -503,6 +504,7 @@ class ConfigMenu extends MusicBeatState
 					if (controls.ACCEPT){
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 						debugValue = !debugValue;
+						writeToConfig();
 					}
 			}
 		}

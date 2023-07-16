@@ -69,7 +69,10 @@ class CharEditor extends FlxState
 		var stage = new Stage('stage', this);
 		add(stage);
 
-		charBG = new Character(0, 0, daAnim, false, true);
+		if (daAnim.contains('player') || daAnim.contains('bf'))
+			charBG = new Character(0, 0, daAnim, true, true);
+		else
+			charBG = new Character(0, 0, daAnim, false, true);
 		charBG.screenCenter();
 		charBG.alpha = 0.75;
 		charBG.color = 0xFF000000;
@@ -195,10 +198,7 @@ class CharEditor extends FlxState
 		{
 			char.playAnim(animList[curAnim], true);
 
-			if (animList[curAnim].endsWith("miss"))
-				charBG.playAnim(animList[curAnim].substring(0, animList[curAnim].length - 4), true);
-			else
-				charBG.idleEnd(true);
+			charBG.dance();
 
 			updateTexts();
 			genBoyOffsets(false);
@@ -284,7 +284,8 @@ class CharEditor extends FlxState
 			"y": char.charJson.y,
 			"x": char.charJson.x,
 			"iconColor": char.charJson.iconColor,
-			"deathCharacter": char.charJson.deathCharacter
+			"deathCharacter": char.charJson.deathCharacter,
+			"hasWinningIcon": char.charJson.hasWinningIcon
 		};
 
 		for (animOffset in animList)
@@ -307,6 +308,8 @@ class CharEditor extends FlxState
 			char.iconName = daAnim;
 		if (char.deathCharacter == null)
 			char.deathCharacter = 'bf';
+		if (char.hasWinningIcon != true && char.hasWinningIcon != false)
+			char.hasWinningIcon = true;
 
 		var data:String = haxe.Json.stringify(char);
 
@@ -361,6 +364,11 @@ class CharEditor extends FlxState
 
 		var hpBarFill = new FlxSprite(hpBar.x + 211.64, hpBar.y + 5).makeGraphic(177, 9, char.characterColor);
 		charUI.add(hpBarFill);
+
+		var icon = new HealthIcon(char.iconName, true, char.hasWinningIcons);
+		icon.x = hpBarFill.x - 40;
+		icon.y = hpBarFill.y - 70;
+		charUI.add(icon);
 		
 		UI_box.addGroup(charUI);
 	}

@@ -648,8 +648,6 @@ class PlayState extends MusicBeatState
 			add(stage);
 		}
 
-		add(gf);
-
 		#if sys
 		scripts = new Array<HScript>();
 
@@ -690,6 +688,8 @@ class PlayState extends MusicBeatState
 		for (i in scripts)
 			i.callFunction('create');
 		#end
+
+		add(gf);
 
 		dads = new FlxTypedGroup();
 		add(dads);
@@ -941,11 +941,11 @@ class PlayState extends MusicBeatState
 		healthBar.antialiasing = true;
 		add(healthBar);
 
-		iconP1 = new HealthIcon(boyfriend.iconName, true);
+		iconP1 = new HealthIcon(boyfriend.iconName, true, boyfriend.hasWinningIcons);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(dad.iconName, false);
+		iconP2 = new HealthIcon(dad.iconName, false, dad.hasWinningIcons);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
@@ -1415,7 +1415,8 @@ class PlayState extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
-		if (!paused){
+		if (!paused)
+		{
 			if (Assets.exists(Paths.inst(SONG.song + '-' + storyDifficulty)))
 				FlxG.sound.playMusic(Paths.inst(SONG.song + '-' + storyDifficulty), 1, false);
 			else
@@ -1994,12 +1995,16 @@ class PlayState extends MusicBeatState
 		// Health Icons
 		if (healthBar.percent < 20)
 		{
+			if (iconP2.hasWinning != false)
+				iconP2.animation.curAnim.curFrame = 2;
+
 			iconP1.animation.curAnim.curFrame = 1;
-			iconP2.animation.curAnim.curFrame = 2;
 		}
 		else if (healthBar.percent > 80)
 		{
-			iconP1.animation.curAnim.curFrame = 2;
+			if (iconP1.hasWinning != false)
+				iconP1.animation.curAnim.curFrame = 2;
+
 			iconP2.animation.curAnim.curFrame = 1;
 		}
 		else
@@ -2194,7 +2199,6 @@ class PlayState extends MusicBeatState
 
 			daNote.x = targetX + daNote.xOffset;
 
-			// MOVE NOTE TRANSPARENCY CODE BECAUSE REASONS
 			if (daNote.tooLate)
 			{
 				if (daNote.alpha > 0.3)
@@ -2225,11 +2229,6 @@ class PlayState extends MusicBeatState
 			{
 				daNote.wasGoodHit = true;
 
-				#if sys
-				for (i in scripts)
-					i.callFunction('dadNoteHit', [daNote]);
-				#end
-
 				var altAnim:String = "";
 
 				if (SONG.notes[Math.floor(curStep / 16)] != null)
@@ -2238,11 +2237,14 @@ class PlayState extends MusicBeatState
 						altAnim = '-alt';
 				}
 
-				// trace("DA ALT THO?: " + SONG.notes[Math.floor(curStep / 16)].altAnim);
+				#if sys
+				for (i in scripts)
+					i.callFunction('dadNoteHit', [daNote]);
+				#end
 
 				for (dad in dads)
 				{
-					if (dad.canAutoAnim && (Character.LOOP_ANIM_ON_HOLD ? true : !daNote.isSustainNote))
+					if (dad.canAutoAnim && (dad.LOOP_ANIM_ON_HOLD ? true : !daNote.isSustainNote))
 					{
 						switch (Math.abs(daNote.noteData))
 						{
@@ -2736,7 +2738,7 @@ class PlayState extends MusicBeatState
 		{
 			if (boyfriend.animation.curAnim.name.startsWith('sing'))
 			{
-				if (Character.USE_IDLE_END)
+				if (boyfriend.USE_IDLE_END)
 				{
 					boyfriend.idleEnd();
 				}
@@ -2819,7 +2821,7 @@ class PlayState extends MusicBeatState
 		{
 			if (boyfriend.animation.curAnim.name.startsWith('sing'))
 			{
-				if (Character.USE_IDLE_END)
+				if (boyfriend.USE_IDLE_END)
 				{
 					boyfriend.idleEnd();
 				}
@@ -3028,7 +3030,7 @@ class PlayState extends MusicBeatState
 
 			for (boyfriend in bfs)
 			{
-				if (boyfriend.canAutoAnim && (Character.LOOP_ANIM_ON_HOLD ? true : !note.isSustainNote))
+				if (boyfriend.canAutoAnim && (boyfriend.LOOP_ANIM_ON_HOLD ? true : !note.isSustainNote))
 				{
 					switch (note.noteData)
 					{
@@ -3340,7 +3342,6 @@ class PlayState extends MusicBeatState
 	{
 		var followX = dads.members[0].getMidpoint().x + 150;
 		var followY = dads.members[0].getMidpoint().y - 100;
-		// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
 		switch (dad.curCharacter)
 		{
@@ -3359,6 +3360,11 @@ class PlayState extends MusicBeatState
 			case 'spirit':
 				followY = dads.members[0].getMidpoint().y;
 		}
+
+		#if sys
+		for (script in scripts)
+			script.callFunction('camFocusDad', [[followX], [followY]]);
+		#end
 
 		camMove(followX, followY, 1.9, FlxEase.quintOut, "dad");
 	}
@@ -3383,6 +3389,11 @@ class PlayState extends MusicBeatState
 				followX = boyfriend.getMidpoint().x - 200;
 				followY = boyfriend.getMidpoint().y - 225;
 		}
+
+		#if sys
+		for (script in scripts)
+			script.callFunction('camFocusBf', [followX, followY]);
+		#end
 
 		camMove(followX, followY, 1.9, FlxEase.quintOut, "bf");
 	}

@@ -50,11 +50,22 @@ class FreeplayState extends MusicBeatState
 	public static var songParseShit:FreeplayJsonShit;
 	public static var speed:Float = 1;
 
+	var script:HScript;
+
 	override function create()
 	{
 		openfl.Lib.current.stage.frameRate = 144;
 
 		curSelected = 0;
+
+		script = new HScript('states/FreeplayState');
+
+		if (!script.isBlank && script.expr != null)
+		{
+			script.interp.scriptObject = this;
+			script.setValue('add', add);
+			script.interp.execute(script.expr);
+		}
 
 		if (Assets.exists(Paths.json('songList')))
 		{
@@ -85,6 +96,10 @@ class FreeplayState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menu/menuBGBlue'));
 		add(bg);
 
+		#if sys
+		script.callFunction('create');
+		#end
+
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
@@ -95,7 +110,7 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i;
 			grpSongs.add(songText);
 
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter, false, true);
 			icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
@@ -122,6 +137,10 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 
+		#if sys
+		script.callFunction('createPost');
+		#end
+
 		changeSelection(startingSelection);
 		FlxG.sound.music.pitch = speed;
 
@@ -130,12 +149,20 @@ class FreeplayState extends MusicBeatState
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, songColor:FlxColor, songDiffs:Array<String>)
 	{
+		#if sys
+		script.callFunction('addSong', [songName, weekNum, songCharacter, songColor, songDiffs]);
+		#end
+
 		songs.push(new SongMetadata(songName, weekNum, songCharacter, songColor, songDiffs));
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		#if sys
+		script.callFunction('update', [elapsed]);
+		#end
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 
@@ -212,6 +239,10 @@ class FreeplayState extends MusicBeatState
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.stop();
 		}
+
+		#if sys
+		script.callFunction('updatePost', [elapsed]);
+		#end
 	}
 
 	function changeSelection(change:Int = 0)
@@ -224,6 +255,10 @@ class FreeplayState extends MusicBeatState
 			curSelected = songs.length - 1;
 		if (curSelected >= songs.length)
 			curSelected = 0;
+
+		#if sys
+		script.callFunction('changeSelection');
+		#end
 
 		changeDiff();
 
@@ -270,6 +305,10 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = songs[curSelected].songDiffs.length - 1;
 		if (curDifficulty > songs[curSelected].songDiffs.length - 1)
 			curDifficulty = 0;
+
+		#if sys
+		script.callFunction('changeDiff');
+		#end
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].songDiffs[curDifficulty]);
