@@ -6,10 +6,12 @@ import flixel.util.FlxColor;
 import lime.app.Application;
 import flixel.FlxG;
 import flixel.text.FlxText;
+import flixel.addons.display.FlxBackdrop;
 
 using StringTools;
 
 class OutdatedState extends MusicBeatState {
+	var bgIcons:FlxBackdrop;
     override public function create() {
         var curVersion:Dynamic = null;
 
@@ -39,6 +41,12 @@ class OutdatedState extends MusicBeatState {
 		bg.color = 0xFF23293F;
 		add(bg);
 
+		bgIcons = new FlxBackdrop(Paths.image('ui/coolBGShit'), #if (flixel < "5.0.0") 1, 1, true, true, #else XY, #end 1, 1);
+		bgIcons.antialiasing = true;
+		bgIcons.scrollFactor.set();
+        bgIcons.alpha = 0.7;
+		add(bgIcons);
+
         var text = new FlxText(0, 0, FlxG.width, 'Yo looks like your FPS PLUS - REFLASHED is outdated man your version is ${Application.current.meta.get('version').split('|')[2]} while the most recent version\nis $curVersion you can press enter to update your game or press your back key');
         text.setFormat(Paths.font('vcr'), 27, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
         text.screenCenter();
@@ -47,6 +55,9 @@ class OutdatedState extends MusicBeatState {
 
     override public function update(elapsed:Float) {
         super.update(elapsed);
+		var scrollSpeed:Float = 50;
+		bgIcons.x -= scrollSpeed * elapsed;
+		bgIcons.y -= scrollSpeed * elapsed;
 
         if (controls.ACCEPT)
             FlxG.openURL('https://github.com/504brandon/FUNKIN-FPS-REFLASHED');
