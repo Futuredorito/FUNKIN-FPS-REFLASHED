@@ -209,7 +209,7 @@ class CharEditor extends FlxState
 			switch (switchBack)
 			{
 				case 'editors':
-					FlxG.switchState(new EditorMenu());
+					FlxG.switchState(new MainMenuState());
 
 				case 'PlayState':
 					FlxG.switchState(new PlayState());

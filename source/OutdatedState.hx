@@ -55,7 +55,7 @@ class OutdatedState extends MusicBeatState {
 
     override public function update(elapsed:Float) {
         super.update(elapsed);
-		var scrollSpeed:Float = 50;
+		var scrollSpeed:Float = 20;
 		bgIcons.x -= scrollSpeed * elapsed;
 		bgIcons.y -= scrollSpeed * elapsed;
 

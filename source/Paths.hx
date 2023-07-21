@@ -59,12 +59,12 @@ class Paths
         return file(key, "music", audioExtension);
     }
 
-    inline static public function voices(key:String){
-        return 'assets/songs/$key/Voices.ogg';
+    inline static public function voices(key:String, key2:String = 'Voices'){
+        return 'assets/songs/$key/$key2.ogg';
     }
 
-    inline static public function inst(key:String){
-        return 'assets/songs/$key/Inst.ogg';
+    inline static public function inst(key:String, key2:String = 'Inst'){
+        return 'assets/songs/$key/$key2.ogg';
     }
 
     inline static public function getSparrowAtlas(key:String){

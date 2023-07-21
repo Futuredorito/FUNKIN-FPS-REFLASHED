@@ -270,8 +270,15 @@ class PlayState extends MusicBeatState
 
 		eventList.sort(sortByEventStuff);
 
-		FlxG.sound.cache(Paths.inst(SONG.song));
-		FlxG.sound.cache(Paths.voices(SONG.song));
+		if (Assets.exists(Paths.inst(SONG.song, 'Inst' + '-' + storyDifficulty)))
+			FlxG.sound.cache(Paths.inst(SONG.song, 'Inst' + '-' + storyDifficulty));
+		else
+			FlxG.sound.cache(Paths.inst(SONG.song));
+
+		if (Assets.exists(Paths.voices(SONG.song, 'Voices' + '-' + storyDifficulty)))
+			FlxG.sound.cache(Paths.voices(SONG.song, 'Voices' + '-' + storyDifficulty));
+		else
+			FlxG.sound.cache(Paths.voices(SONG.song));
 
 		if (Config.noFpsCap)
 			openfl.Lib.current.stage.frameRate = 999;
@@ -651,37 +658,105 @@ class PlayState extends MusicBeatState
 		#if sys
 		scripts = new Array<HScript>();
 
-		if (Assets.exists(Paths.text(SONG.song + '/scripts')))
+		for (allowed in HScript.allowedExtensions)
 		{
-			for (i in CoolUtil.coolTextFile(Paths.text(SONG.song + '/scripts')))
+			if (FileSystem.exists('./mods/${Assets.getText(Paths.text('modSelected'))}/data/${SONG.song}'))
 			{
-				var script:HScript = new HScript('data/' + SONG.song + '/' + i);
-
-				if (!script.isBlank && script.expr != null)
+				for (i in FileSystem.readDirectory('./mods/${Assets.getText(Paths.text('modSelected'))}/data/${SONG.song}'))
 				{
-					script.interp.scriptObject = this;
-					script.setValue('add', add);
-					script.interp.execute(script.expr);
-				}
+					if (i.contains(allowed))
+					{
+						var scriptrel:Array<String> = i.split('.');
 
-				scripts.push(script);
+						scriptrel.remove(allowed);
+
+						var script:HScript = new HScript('data/' + SONG.song + '/' + scriptrel[0]);
+
+						if (!script.isBlank && script.expr != null)
+						{
+							script.interp.scriptObject = this;
+							script.setValue('add', add);
+							script.interp.execute(script.expr);
+						}
+
+						scripts.push(script);
+					}
+				}
 			}
-		}
 
-		if (Assets.exists(Paths.text('scripts', 'scripts')))
-		{
-			for (i in CoolUtil.coolTextFile(Paths.text('scripts', 'scripts')))
+			if (FileSystem.exists('./mods/${Assets.getText(Paths.text('modSelected'))}/scripts'))
 			{
-				var script:HScript = new HScript('scripts/$i');
-
-				if (!script.isBlank && script.expr != null)
+				for (i in FileSystem.readDirectory('./mods/${Assets.getText(Paths.text('modSelected'))}/scripts'))
 				{
-					script.interp.scriptObject = this;
-					script.setValue('add', add);
-					script.interp.execute(script.expr);
-				}
+					if (i.contains(allowed))
+					{
+						var scriptrel:Array<String> = i.split('.');
 
-				scripts.push(script);
+						scriptrel.remove(allowed);
+
+						var script:HScript = new HScript('scripts/${scriptrel[0]}');
+
+						if (!script.isBlank && script.expr != null)
+						{
+							script.interp.scriptObject = this;
+							script.setValue('add', add);
+							script.interp.execute(script.expr);
+						}
+
+						if (!scripts.contains(script))
+							scripts.push(script);
+					}
+				}
+			}
+
+			if (FileSystem.exists('./mods/Global/data/${SONG.song}'))
+			{
+				for (i in FileSystem.readDirectory('./mods/Global/data/${SONG.song}'))
+				{
+					if (i.contains(allowed))
+					{
+						var scriptrel:Array<String> = i.split('.');
+
+						scriptrel.remove(allowed);
+
+						var script:HScript = new HScript('data/' + SONG.song + '/' + scriptrel[0]);
+
+						if (!script.isBlank && script.expr != null)
+						{
+							script.interp.scriptObject = this;
+							script.setValue('add', add);
+							script.interp.execute(script.expr);
+						}
+
+						if (!scripts.contains(script))
+							scripts.push(script);
+					}
+				}
+			}
+
+			if (FileSystem.exists('./mods/Global/scripts'))
+			{
+				for (i in FileSystem.readDirectory('./mods/Global/scripts'))
+				{
+					if (i.contains(allowed))
+					{
+						var scriptrel:Array<String> = i.split('.');
+
+						scriptrel.remove(allowed);
+
+						var script:HScript = new HScript('scripts/${scriptrel[0]}');
+
+						if (!script.isBlank && script.expr != null)
+						{
+							script.interp.scriptObject = this;
+							script.setValue('add', add);
+							script.interp.execute(script.expr);
+						}
+
+						if (!scripts.contains(script))
+							scripts.push(script);
+					}
+				}
 			}
 		}
 
@@ -1417,8 +1492,8 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
-			if (Assets.exists(Paths.inst(SONG.song + '-' + storyDifficulty)))
-				FlxG.sound.playMusic(Paths.inst(SONG.song + '-' + storyDifficulty), 1, false);
+			if (Assets.exists(Paths.inst(SONG.song, 'Inst' + '-' + storyDifficulty)))
+				FlxG.sound.playMusic(Paths.inst(SONG.song, 'Inst' + '-' + storyDifficulty), 1, false);
 			else
 				FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
 		}
@@ -1457,8 +1532,8 @@ class PlayState extends MusicBeatState
 
 		if (SONG.needsVoices)
 		{
-			if (Assets.exists(Paths.voices(SONG.song + '-' + storyDifficulty)))
-				vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song + '-' + storyDifficulty));
+			if (Assets.exists(Paths.voices(SONG.song, 'Voices' + '-' + storyDifficulty)))
+				vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song, 'Voices' + '-' + storyDifficulty));
 			else
 				vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
 		}
@@ -1936,6 +2011,13 @@ class PlayState extends MusicBeatState
 			default:
 				scoreTxt.text = "Score:" + songScore;
 		}
+
+		if (paused)
+			DiscordClient.changePresence('Paused in ${SONG.song} - ${storyDifficulty.toUpperCase()}',
+				'Details: Score: $songScore, Misses: $misses, Accuracy: ${truncateFloat(accuracy, 2)}%');
+		else
+			DiscordClient.changePresence('Playing in ${SONG.song} - ${storyDifficulty.toUpperCase()} with ${FlxStringUtil.formatTime(((FlxG.sound.music.length) / 1000) - timeBarTime)} time left.',
+				'Details: Score: $songScore, Misses: $misses, Accuracy: ${truncateFloat(accuracy, 2)}%');
 
 		if (controls.PAUSE && startedCountdown && canPause)
 		{
@@ -2913,6 +2995,11 @@ class PlayState extends MusicBeatState
 		{
 			System.exit(0);
 		}
+
+		#if sys
+		for (script in scripts)
+			script.callFunction('onMiss');
+		#end
 	}
 
 	inline function noteMissWrongPress(direction:Int = 1, ?healthLoss:Float = 0.0475):Void

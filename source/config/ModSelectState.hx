@@ -88,7 +88,7 @@ class ModSelectState extends MusicBeatState
 		super.update(elapsed);
 
 		if (controls.BACK)
-			FlxG.switchState(new ConfigMenu());
+			FlxG.switchState(new MainMenuState());
 		if (controls.UP_P)
 			changeSelection(-1);
 		if (controls.DOWN_P)

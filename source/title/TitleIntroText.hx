@@ -2,7 +2,6 @@ package title;
 
 import lime.app.Application;
 import config.ModSelectState;
-import config.Config;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -43,6 +42,8 @@ class TitleIntroText extends MusicBeatState
 			PlayerSettings.player1.controls.loadKeyBinds();
 			config.Config.configCheck();
 		}
+
+		DiscordClient.initialize();
 
 		#if sys
 		polymod.Polymod.init({

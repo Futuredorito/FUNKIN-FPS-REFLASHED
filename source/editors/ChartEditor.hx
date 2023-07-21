@@ -1,5 +1,7 @@
 package editors;
 
+import openfl.Assets;
+import sys.FileSystem;
 import flixel.ui.FlxButton;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
@@ -386,6 +388,18 @@ class ChartEditor extends MusicBeatState
 		var gfs:Array<String> = CoolUtil.coolTextFile(Paths.text("gfList"));
 		var stages:Array<String> = CoolUtil.coolTextFile(Paths.text("stageList"));
 
+		if (FileSystem.exists('./mods/${Assets.getText(Paths.text('modSelected'))}/characters')){
+			for (char in FileSystem.readDirectory('./mods/${Assets.getText(Paths.text('modSelected'))}/characters')){
+				var real:Array<String> = char.split('.');
+
+				real.remove('hx');
+				real.remove('json');
+
+				if (!characters.contains(real[0]))
+					characters.push(real[0]);
+			}
+		}
+
 		player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player1 = characters[Std.parseInt(character)];
@@ -403,7 +417,6 @@ class ChartEditor extends MusicBeatState
 
 		var diffDrop:FlxUIDropDownMenu = new FlxUIDropDownMenu(10, 160, FlxUIDropDownMenu.makeStrIdLabelArray(["Easy", "Normal", "Hard"], true), function(diff:String)
 		{
-			trace(diff);
 			diffDropFinal = diffList[Std.parseInt(diff)];
 			
 		});

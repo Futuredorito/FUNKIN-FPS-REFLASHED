@@ -27,9 +27,22 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
+	var script:HScript;
+
 	override function create()
 	{
 		openfl.Lib.current.stage.frameRate = 144;
+
+		DiscordClient.changePresence('In the menus.', '');
+
+		script = new HScript('states/MainMenuState');
+
+		if (!script.isBlank && script.expr != null)
+		{
+			script.interp.scriptObject = this;
+			script.setValue('add', add);
+			script.interp.execute(script.expr);
+		}
 
 		if (!FlxG.sound.music.playing)
 		{
@@ -137,7 +150,7 @@ class MainMenuState extends MusicBeatState
 			}
 
 			if (FlxG.keys.justPressed.SEVEN && Config.debug)
-				FlxG.switchState(new editors.EditorMenu());
+				openSubState(new editors.ToolBox());
 
 			if (controls.ACCEPT)
 			{

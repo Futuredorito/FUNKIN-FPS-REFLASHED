@@ -7,50 +7,61 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import title.TitleScreen;
 
-typedef CreditsJson = {
-	var credits:Array<String>;
-	var links:Array<String>;
+typedef CreditsArray =
+{
+	var credit:String;
+	var link:String;
+}
+
+typedef CreditsJson =
+{
+	var credits:Array<CreditsArray>;
 }
 
 class CreditsMenu extends MusicBeatState
 {
 	private var grpCredits:FlxTypedGroup<Alphabet>;
-	var creditsShit:Array<String> = [];
-	var creditsLinks:Array<String> = [];
-	public static var curSelected:Int = 0;
+	var credits:Array<String> = [];
+	var creditsLink:Array<String> = [];
+	var curSelected:Int = 0;
+	var creds:CreditsJson;
 
-    override public function create()
-    {
+	override public function create()
+	{
 		openfl.Lib.current.stage.frameRate = 144;
+
+		creds = Json.parse(Assets.getText(Paths.json('baseCredits')));
+
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menu/menuBGBlue'));
 		add(bg);
 
-        FlxG.sound.playMusic(Paths.music(TitleScreen.titleMusic), 1);
-
-		var creds:CreditsJson = Json.parse(Assets.getText(Paths.json('baseCredits')));
+		FlxG.sound.playMusic(Paths.music(TitleScreen.titleMusic), 1);
 
 		for (cred in creds.credits)
-			creditsShit.push(cred);
-
-		for (credLink in creds.links)
-			creditsLinks.push(credLink);
+		{
+			credits.push(cred.credit);
+			creditsLink.push(cred.link);
+		}
 
 		grpCredits = new FlxTypedGroup<Alphabet>();
 		add(grpCredits);
 
-        for (i in 0...creditsShit.length)
+		for (i in 0...credits.length)
 		{
-			var credText:Alphabet = new Alphabet(0, (70 * i) + 30, creditsShit[i], true, false);
+			var credText:Alphabet = new Alphabet(0, (70 * i) + 30, credits[i], true, false);
 			credText.isMenuItem = true;
 			credText.targetY = i;
 			grpCredits.add(credText);
 		}
 		FlxG.sound.music.pitch = 0.7;
-        super.create();
-    }
 
-    override public function update(elapsed:Float):Void
-    {
+		changeSelection();
+
+		super.create();
+	}
+
+	override public function update(elapsed:Float):Void
+	{
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
@@ -63,17 +74,19 @@ class CreditsMenu extends MusicBeatState
 		{
 			changeSelection(1);
 		}
-		if (accepted) {
-			trace(creditsShit[curSelected]);
+		if (accepted)
+		{
+			FlxG.openURL(creditsLink[curSelected]);
 		}
-        if (controls.BACK) {
+		if (controls.BACK)
+		{
 			FlxG.sound.music.stop();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			switchState(new MainMenuState());
-        }
+		}
 
-        super.update(elapsed);
-    }
+		super.update(elapsed);
+	}
 
 	function changeSelection(change:Int = 0)
 	{
@@ -82,8 +95,8 @@ class CreditsMenu extends MusicBeatState
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = creditsShit.length - 1;
-		if (curSelected >= creditsShit.length)
+			curSelected = credits.length - 1;
+		if (curSelected >= credits.length)
 			curSelected = 0;
 
 		var bullShit:Int = 0;

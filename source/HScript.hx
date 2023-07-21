@@ -55,6 +55,7 @@ class HScript {
 			blankVars = new Map();
 		} else {
 			var defaultVars:Map<String, Dynamic> = [
+				"Http" => haxe.Http,
 				"Math" => Math,
 				"Std" => Std,
 				"FlxG" => flixel.FlxG,

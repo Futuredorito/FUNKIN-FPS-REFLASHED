@@ -256,6 +256,8 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
+		DiscordClient.changePresence('About to play ${songs[curSelected].songName} on ${songs[curSelected].songDiffs[curDifficulty].toUpperCase()}', 'vs ${songs[curSelected].songCharacter}');
+
 		#if sys
 		script.callFunction('changeSelection');
 		#end
