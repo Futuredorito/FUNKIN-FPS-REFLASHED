@@ -24,4 +24,7 @@ function create()
 
 	var evilTrail = new DeltaTrail(character, null, 10, 3 / 60, 0.4);
 	PlayState.instance.add(evilTrail);
+
+	character.x -= 150;
+	character.y += 100;
 }

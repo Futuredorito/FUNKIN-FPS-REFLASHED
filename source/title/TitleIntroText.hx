@@ -22,7 +22,8 @@ class TitleIntroText extends MusicBeatState
 
 	override public function create():Void
 	{
-		if (!ModSelectState.idk){
+		if (ModSelectState.idk != true)
+		{
 			useDefaultTransIn = false;
 			useDefaultTransOut = false;
 
@@ -104,7 +105,8 @@ class TitleIntroText extends MusicBeatState
 
 		http.onData = function(data:String)
 		{
-			if (data.split('\n')[0].trim() != Application.current.meta.get('version').split('|')[2]){ 
+			if (data.split('\n')[0].trim() != Application.current.meta.get('version').split('|')[2])
+			{
 				trace(Application.current.meta.get('version').split('|')[2] + " aint the right version the right version is " + data.split('\n')[0].trim());
 
 				FlxG.switchState(new OutdatedState());

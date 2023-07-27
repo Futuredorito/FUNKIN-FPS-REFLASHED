@@ -121,8 +121,6 @@ class ChartEditor extends MusicBeatState
 
 	override function create()
 	{
-		openfl.Lib.current.stage.frameRate = 120;
-
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menu/menuDesat'));
 		bg.scrollFactor.set(0, 0);
 		bg.setGraphicSize(Std.int(bg.width * 1.18));

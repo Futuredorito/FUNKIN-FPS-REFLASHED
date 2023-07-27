@@ -20,5 +20,8 @@ function create()
 
 	character.antialiasing = false;
 
-    character.characterColor = 0xFFFFAA6F;
+	character.characterColor = 0xFFFFAA6F;
+
+	character.x += 150;
+	character.y += 360;
 }

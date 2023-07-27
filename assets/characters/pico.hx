@@ -26,4 +26,10 @@ function create()
 	character.facesLeft = true;
 
     character.characterColor = 0xFFB7D855;
+
+	character.y += 300;
+	character.x -= 280;
+
+	character.camY = 40;
+	character.camX = -20;
 }

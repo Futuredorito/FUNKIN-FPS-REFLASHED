@@ -280,11 +280,6 @@ class PlayState extends MusicBeatState
 		else
 			FlxG.sound.cache(Paths.voices(SONG.song));
 
-		if (Config.noFpsCap)
-			openfl.Lib.current.stage.frameRate = 999;
-		else
-			openfl.Lib.current.stage.frameRate = 144;
-
 		camTween = FlxTween.tween(this, {}, 0);
 		camZoomTween = FlxTween.tween(this, {}, 0);
 		uiZoomTween = FlxTween.tween(this, {}, 0);
@@ -809,38 +804,6 @@ class PlayState extends MusicBeatState
 				{
 					camPos.x += 600;
 				}
-
-			case "spooky":
-				dad.y += 200;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y - 100);
-			case "monster":
-				dad.y += 100;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y - 100);
-			case 'monster-christmas':
-				dad.y += 130;
-			case 'dad':
-				camPos.x += 400;
-			case 'pico':
-				camPos.x += 600;
-				dad.y += 300;
-				dad.x -= 280;
-			case 'parents-christmas':
-				dad.x -= 500;
-			case 'senpai':
-				dad.x += 150;
-				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'senpai-angry':
-				dad.x += 150;
-				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'spirit':
-				dad.x -= 150;
-				dad.y += 100;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'tankman':
-				dad.y += 165;
-				dad.x -= 40;
 		}
 
 		// REPOSITIONING PER STAGE
@@ -1896,8 +1859,8 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+			FlxG.camera.zoom = CoolUtil.fpsAdjsutedLerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+			camHUD.zoom = CoolUtil.fpsAdjsutedLerp(1, camHUD.zoom, 0.95);
 		}
 
 		if (generatedMusic)
@@ -3057,39 +3020,29 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	/*function setBoyfriendStunned(time:Float = 5 / 60){
-
-		boyfriend.stunned = true;
-
-		new FlxTimer().start(time, function(tmr:FlxTimer)
-		{
-			boyfriend.stunned = false;
-		});
-
-	}*/
-	function goodNoteHit(note:Note):Void
+	function goodNoteHit(daNote:Note):Void
 	{
 		#if sys
 		for (i in scripts)
-			i.callFunction('bfNoteHit', [note]);
+			i.callFunction('bfNoteHit', [daNote]);
 		#end
 
 		// Guitar Hero Styled Hold Notes
 		// This is to make sure that if hold notes are hit out of order they are destroyed. Should not be possible though.
-		if (note.isSustainNote && !note.prevNote.wasGoodHit)
+		if (daNote.isSustainNote && !daNote.prevNote.wasGoodHit)
 		{
-			noteMiss(note.noteData, 0.055, true, true, false);
+			noteMiss(daNote.noteData, 0.055, true, true, false);
 			vocals.volume = 0;
-			note.prevNote.tooLate = true;
-			note.prevNote.destroy();
+			daNote.prevNote.tooLate = true;
+			daNote.prevNote.destroy();
 			boyfriend.holdTimer = 0;
 			updateAccuracy();
 		}
-		else if (!note.wasGoodHit)
+		else if (!daNote.wasGoodHit)
 		{
-			if (!note.isSustainNote)
+			if (!daNote.isSustainNote)
 			{
-				popUpScore(note);
+				popUpScore(daNote);
 				combo += 1;
 				if (Config.uiType == 'PSYCH' && !scoreTween)
 				{
@@ -3106,7 +3059,7 @@ class PlayState extends MusicBeatState
 			else
 				totalNotesHit += 1;
 
-			if (note.noteData >= 0)
+			if (daNote.noteData >= 0)
 			{
 				health += 0.015 * Config.healthMultiplier;
 			}
@@ -3117,9 +3070,9 @@ class PlayState extends MusicBeatState
 
 			for (boyfriend in bfs)
 			{
-				if (boyfriend.canAutoAnim && (boyfriend.LOOP_ANIM_ON_HOLD ? true : !note.isSustainNote))
+				if (boyfriend.canAutoAnim && (boyfriend.LOOP_ANIM_ON_HOLD ? true : !daNote.isSustainNote))
 				{
-					switch (note.noteData)
+					switch (daNote.noteData)
 					{
 						case 2:
 							boyfriend.playAnim('singUP', true);
@@ -3133,25 +3086,25 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if (!note.isSustainNote)
+			if (!daNote.isSustainNote)
 			{
 				setBoyfriendInvuln(2.5 / 60);
 			}
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
-				if (Math.abs(note.noteData) == spr.ID)
+				if (Math.abs(daNote.noteData) == spr.ID)
 				{
 					spr.animation.play('confirm', true);
 				}
 			});
 
-			note.wasGoodHit = true;
+			daNote.wasGoodHit = true;
 			vocals.volume = 1;
 
-			if (!note.isSustainNote)
+			if (!daNote.isSustainNote)
 			{
-				note.destroy();
+				daNote.destroy();
 			}
 
 			updateAccuracy();
@@ -3255,13 +3208,13 @@ class PlayState extends MusicBeatState
 
 			for (dad in dads)
 			{
-				if (dad.holdTimer == 0 && dad.animation.curAnim.finished && dadBeats.contains(curBeat % 4))
+				if (dad.holdTimer == 0 && dad.animation.curAnim.finished && dadBeats.contains(curBeat % 4) && dad.canAutoAnim)
 					dad.dance();
 			}
 
 			for (boyfriend in bfs)
 			{
-				if (bfBeats.contains(curBeat % 4) && boyfriend.canAutoAnim && !boyfriend.animation.curAnim.name.startsWith('sing'))
+				if (bfBeats.contains(curBeat % 4) && !boyfriend.animation.curAnim.name.startsWith('sing') && boyfriend.canAutoAnim)
 				{
 					boyfriend.dance();
 				}
@@ -3427,25 +3380,25 @@ class PlayState extends MusicBeatState
 
 	function camFocusOpponent()
 	{
-		var followX = dads.members[0].getMidpoint().x + 150;
-		var followY = dads.members[0].getMidpoint().y - 100;
+		var followX = dads.members[0].getMidpoint().x + 150 + dads.members[0].camX;
+		var followY = dads.members[0].getMidpoint().y - 100 + dads.members[0].camY;
 
 		switch (dad.curCharacter)
 		{
 			case "spooky":
-				followY = dads.members[0].getMidpoint().y - 30;
+				followY = dads.members[0].getMidpoint().y - 30 + dads.members[0].camY;
 			case "pico":
 				followX += 280;
 			case "mom" | "mom-car":
-				followY = dads.members[0].getMidpoint().y;
+				followY = dads.members[0].getMidpoint().y + dads.members[0].camY;
 			case 'senpai':
 				followY = dads.members[0].getMidpoint().y - 430;
-				followX = dads.members[0].getMidpoint().x - 100;
+				followX = dads.members[0].getMidpoint().x - 100 + dads.members[0].camX;
 			case 'senpai-angry':
 				followY = dads.members[0].getMidpoint().y - 430;
-				followX = dads.members[0].getMidpoint().x - 100;
+				followX = dads.members[0].getMidpoint().x - 100 + dads.members[0].camX;
 			case 'spirit':
-				followY = dads.members[0].getMidpoint().y;
+				followY = dads.members[0].getMidpoint().y + dads.members[0].camY;
 		}
 
 		#if sys
@@ -3458,23 +3411,23 @@ class PlayState extends MusicBeatState
 
 	function camFocusBF()
 	{
-		var followX = boyfriend.getMidpoint().x - 100;
-		var followY = boyfriend.getMidpoint().y - 100;
+		var followX = bfs.members[0].getMidpoint().x - 100 + bfs.members[0].camX;
+		var followY = bfs.members[0].getMidpoint().y - 100 + bfs.members[0].camY;
 
 		switch (curStage)
 		{
 			case 'spooky':
-				followY = boyfriend.getMidpoint().y - 125;
+				followY = bfs.members[0].getMidpoint().y - 125 + bfs.members[0].camY;
 			case 'limo':
-				followX = boyfriend.getMidpoint().x - 300;
+				followX = bfs.members[0].getMidpoint().x - 300 + bfs.members[0].camX;
 			case 'mall':
-				followY = boyfriend.getMidpoint().y - 200;
+				followY = bfs.members[0].getMidpoint().y - 200 + bfs.members[0].camY;
 			case 'school':
-				followX = boyfriend.getMidpoint().x - 200;
-				followY = boyfriend.getMidpoint().y - 225;
+				followX = bfs.members[0].getMidpoint().x - 200 + bfs.members[0].camX;
+				followY = bfs.members[0].getMidpoint().y - 225 + bfs.members[0].camY;
 			case 'schoolEvil':
-				followX = boyfriend.getMidpoint().x - 200;
-				followY = boyfriend.getMidpoint().y - 225;
+				followX = bfs.members[0].getMidpoint().x - 200 + bfs.members[0].camX;
+				followY = bfs.members[0].getMidpoint().y - 225 + bfs.members[0].camY;
 		}
 
 		#if sys
@@ -3512,17 +3465,6 @@ class PlayState extends MusicBeatState
 	override public function onFocus()
 	{
 		super.onFocus();
-		new FlxTimer().start(0.3, function(t)
-		{
-			if (Config.noFpsCap && !paused)
-			{
-				openfl.Lib.current.stage.frameRate = 999;
-			}
-			else
-			{
-				openfl.Lib.current.stage.frameRate = 144;
-			}
-		});
 	}
 
 	function inRange(a:Float, b:Float, tolerance:Float)

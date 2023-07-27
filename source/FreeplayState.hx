@@ -54,8 +54,6 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		openfl.Lib.current.stage.frameRate = 144;
-
 		curSelected = 0;
 
 		script = new HScript('states/FreeplayState');

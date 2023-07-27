@@ -31,8 +31,6 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		openfl.Lib.current.stage.frameRate = 144;
-
 		DiscordClient.changePresence('In the menus.', '');
 
 		script = new HScript('states/MainMenuState');
@@ -111,6 +109,11 @@ class MainMenuState extends MusicBeatState
 
 		// Offset Stuff
 		Config.reload();
+
+		if (Config.noFpsCap){
+			FlxG.stage.frameRate = 1000;
+			trace('shit');
+		}
 
 		super.create();
 	}

@@ -16,4 +16,6 @@ function create()
 
 	character.iconName = "monster";
     character.characterColor = 0xFFF3FF6E;
+
+	character.y += 130;
 }

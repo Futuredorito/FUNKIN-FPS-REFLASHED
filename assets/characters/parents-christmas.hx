@@ -27,4 +27,6 @@ function create()
 
 	character.iconName = "parents";
     character.characterColor = 0xFFAF66CE;
+
+	character.x -= 500;
 }

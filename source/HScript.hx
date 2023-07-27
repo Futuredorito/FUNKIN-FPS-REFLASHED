@@ -69,6 +69,7 @@ class HScript {
 				"Assets" => openfl.Assets,
 				"Paths" => Paths,
 				"Files" => Paths,
+				"FlxColor" => FlxColor_Helper,
 				"Conductor" => Conductor,
 				"PlayState" => PlayState,
 				"MusicBeatState" => MusicBeatState,

@@ -30,7 +30,6 @@ class Main extends Sprite
 		addChild(fpsDisplay);
 		#end
 
-		//On web builds, video tends to lag quite a bit, so this just helps it run a bit faster.
 		#if web
 		VideoHandler.MAX_FPS = 30;
 		#end
@@ -38,6 +37,5 @@ class Main extends Sprite
 		trace("-=Args=-");
 		trace("novid: " + novid);
 		trace("flippymode: " + flippymode);
-
 	}
 }

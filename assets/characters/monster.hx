@@ -15,4 +15,6 @@ function create()
 	character.playAnim('idle');
 
     character.characterColor = 0xFFF3FF6E;
+
+	character.y += 100;
 }

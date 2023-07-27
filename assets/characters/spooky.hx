@@ -19,6 +19,8 @@ function create()
 	character.playAnim('danceRight');
 
 	character.characterColor = 0xFFD57E00;
+
+	character.y += 200;
 }
 
 var danced = false;

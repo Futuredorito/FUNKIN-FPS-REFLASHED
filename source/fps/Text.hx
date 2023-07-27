@@ -1,5 +1,8 @@
 package fps;
 
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import config.Config;
 import lime.app.Application;
 import fps.memory.Memory;
 import fps.fabric.engine.Utilities;
@@ -42,7 +45,7 @@ class Text extends TextField
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat(Paths.font("vcr"), 12, color); 
+		defaultTextFormat = new TextFormat(Paths.font("vcr"), 12, color);
 
 		cacheCount = 0;
 		currentTime = 0;
@@ -73,8 +76,23 @@ class Text extends TextField
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 
-		if (currentCount != cacheCount /*&& visible*/){
+		if (currentCount != cacheCount /*&& visible*/)
+		{
 			text = "FPS: " + currentFPS + "\n" + Utilities.format_bytes(Memory.getCurrentUsage()) + " - " + Utilities.format_bytes(Memory.getPeakUsage());
+		}
+
+		if (Config.noFpsCap)
+		{
+			if (currentFPS < 20)
+				this.textColor = Std.int(FlxMath.lerp(this.textColor, 0xffff0000, 0.2));
+			else if (currentFPS < 40)
+				this.textColor = Std.int(FlxMath.lerp(this.textColor, 0xffffe600, 0.2));
+			else if (currentFPS < 100)
+				this.textColor = Std.int(FlxMath.lerp(this.textColor, 0xffbbff00, 0.2));
+			else if (currentFPS < 200)
+				this.textColor = Std.int(FlxMath.lerp(this.textColor, 0xffbbff00, 0.2));
+			else
+				this.textColor = Std.int(FlxMath.lerp(this.textColor, 0xfffcfcfc, 0.2));
 		}
 
 		cacheCount = currentCount;

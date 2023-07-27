@@ -2,13 +2,13 @@
 
 name: Build
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -52,12 +52,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: linuxBuild
-          path: 'export/release/linux/bin' 
-      - name: Publish Linux Updator
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: linuxUpdator
-          path: 'export/release/linux/bin/TEST'
+          path: "export/release/linux/bin"
 
   buildHTML5:
     # The type of runner that the job will run on
@@ -94,16 +89,11 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: html5Build
-          path: 'export/release/html5/bin'
-      - name: Publish HTML5 Updator
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: html5Updator
-          path: 'export/release/html5/bin/index.html'
+          path: "export/release/html5/bin"
 
   buildWindows:
     runs-on: windows-latest
-    
+
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2.3.0
@@ -141,11 +131,6 @@ jobs:
         with:
           name: windowsBuild
           path: export/release/windows/bin
-      - name: Publish Windows Updator
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: windowsUpdator
-          path: 'export/release/windows/bin/TEST.exe'
 
   buildMac:
     runs-on: macos-latest
@@ -164,7 +149,7 @@ jobs:
           haxelib install hxcpp > /dev/null
           haxelib install lime
           haxelib install openfl
-          haxelib --never install flixel
+          haxelib --never install flixel 4.2.5
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools
@@ -186,9 +171,3 @@ jobs:
         with:
           name: macBuild
           path: export/release/macos/bin
-      - name: Publish Mac Updator
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: macUpdator
-          path: 'export/release/macos/bin/TEST.app'
-          

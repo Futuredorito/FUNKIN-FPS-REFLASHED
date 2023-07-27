@@ -81,9 +81,6 @@ class TitleScreen extends MusicBeatState
 		titleText.antialiasing = true;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
-		/*titleText.angle = camBackground.angle;
-		titleText.x += 120;
-		titleText.y -= 24;*/
 
 		add(bgBfTop);
 		add(bgBfBottom);

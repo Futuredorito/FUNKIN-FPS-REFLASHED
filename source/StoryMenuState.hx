@@ -65,8 +65,6 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
-		openfl.Lib.current.stage.frameRate = 144;
-
 		if (Assets.exists(Paths.json('songList')))
 		{
 			storyJson = Json.parse(Assets.getText(Paths.json('songList')));

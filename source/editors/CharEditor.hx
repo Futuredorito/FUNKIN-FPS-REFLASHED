@@ -50,8 +50,6 @@ class CharEditor extends FlxState
 
 	override function create()
 	{
-		openfl.Lib.current.stage.frameRate = 144;
-
 		FlxG.mouse.visible = true;
 		FlxG.mouse.enabled = true;
 

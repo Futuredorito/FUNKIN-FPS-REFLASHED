@@ -25,6 +25,8 @@ typedef CharacterLoading =
 	var flipY:Bool;
 	var x:Float;
 	var y:Float;
+	var camY:Float;
+	var camX:Float;
 	var iconName:String;
 	var deathCharacter:String;
 	var iconColor:String;
@@ -58,6 +60,9 @@ class Character extends FlxSprite
 
 	public var facesLeft:Bool = false;
 	public var hasWinningIcons:Bool = true;
+
+	public var camX:Float;
+	public var camY:Float;
 
 	var script:HScript;
 
@@ -362,5 +367,7 @@ class Character extends FlxSprite
 		hasWinningIcons = charJson.hasWinningIcon;
 		facesLeft = charJson.flipX;
 		flipY = charJson.flipY;
+		camY = charJson.camY;
+		camX = charJson.camX;
 	}
 }

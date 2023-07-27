@@ -28,8 +28,6 @@ class CreditsMenu extends MusicBeatState
 
 	override public function create()
 	{
-		openfl.Lib.current.stage.frameRate = 144;
-
 		creds = Json.parse(Assets.getText(Paths.json('baseCredits')));
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menu/menuBGBlue'));
