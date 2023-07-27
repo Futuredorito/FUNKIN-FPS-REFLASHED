@@ -61,8 +61,8 @@
 	<haxelib name="scriptless-polymod" unless="web"/>
 
 	<!--Yoshi Crafter Hscript better-->
-	<haxedef name="hscriptPos"/>
-	<haxelib name="hscript-improved"/>
+	<haxedef name="hscriptPos" unless="web"/>
+	<haxelib name="hscript-improved" unless="web"/>
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->

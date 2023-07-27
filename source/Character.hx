@@ -124,7 +124,9 @@ class Character extends FlxSprite
 			}
 		}
 
-		animation.finishCallback = animationEnd;
+		animation.finishCallback = function(anim) {
+			danceLockout = false;
+		};
 
 		if (characterColor == null)
 		{
@@ -295,44 +297,6 @@ class Character extends FlxSprite
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
 		animOffsets[name] = [x, y];
-	}
-
-	function animationEnd(name:String)
-	{
-		#if sys
-		script.callFunction('animationEnd', [name]);
-		#end
-		danceLockout = false;
-
-		switch (curCharacter)
-		{
-			case "dad" | "mom" | "mom-car" | "bf-car":
-				playAnim(name, true, false, animation.getByName(name).numFrames - 4);
-
-			case "bf" | "bf-christmas" | "bf-pixel" | "bf-holding-gf" | "pico":
-				if (name.contains("miss"))
-				{
-					playAnim(name, true, false, animation.getByName(name).numFrames - 4);
-				}
-
-			case "monster-christmas" | "monster":
-				switch (name)
-				{
-					case "idle":
-						playAnim(name, false, false, 10);
-					case "singUP":
-						playAnim(name, false, false, 8);
-					case "singDOWN":
-						playAnim(name, false, false, 7);
-					case "singLEFT":
-						playAnim(name, false, false, 5);
-					case "singRIGHT":
-						playAnim(name, false, false, 6);
-				}
-
-			case "pico-speaker":
-				playAnim(animation.curAnim.name, false, false, animation.curAnim.numFrames - 3);
-		}
 	}
 
 	public function loadByJson(char:String)

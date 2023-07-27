@@ -111,7 +111,10 @@ class MainMenuState extends MusicBeatState
 		Config.reload();
 
 		if (Config.noFpsCap){
-			FlxG.stage.frameRate = 1000;
+			FlxG.stage.frameRate = 999;
+			FlxG.drawFramerate = 999;
+			FlxG.updateFramerate = 999;
+			FlxG.fixedTimestep = false;
 			trace('shit');
 		}
 

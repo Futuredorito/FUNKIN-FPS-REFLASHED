@@ -198,9 +198,6 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
-	var dadBeats:Array<Int> = [0, 2];
-	var bfBeats:Array<Int> = [1, 3];
-
 	public static var sectionStart:Bool = false;
 	public static var sectionStartPoint:Int = 0;
 	public static var sectionStartTime:Float = 0;
@@ -767,32 +764,6 @@ class PlayState extends MusicBeatState
 		bfs = new FlxTypedGroup();
 		add(bfs);
 
-		switch (SONG.song.toLowerCase())
-		{
-			case "tutorial":
-				autoZoom = false;
-				dadBeats = [0, 1, 2, 3];
-			case "bopeebo":
-				dadBeats = [0, 1, 2, 3];
-				bfBeats = [0, 1, 2, 3];
-			case "fresh":
-				camZooming = false;
-				dadBeats = [0, 1, 2, 3];
-				bfBeats = [0, 1, 2, 3];
-			case "spookeez":
-				dadBeats = [0, 1, 2, 3];
-			case "south":
-				dadBeats = [0, 1, 2, 3];
-			case "monster":
-				dadBeats = [0, 1, 2, 3];
-				bfBeats = [0, 1, 2, 3];
-			case "cocoa":
-				dadBeats = [0, 1, 2, 3];
-				bfBeats = [0, 1, 2, 3];
-			case "thorns":
-				dadBeats = [0, 1, 2, 3];
-		}
-
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
 		switch (SONG.player2)
@@ -851,7 +822,6 @@ class PlayState extends MusicBeatState
 				if (FlxG.random.bool(16))
 				{
 					var tankman:TankmenBG = tankmanRun.recycle(TankmenBG);
-					// new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
 					tankman.strumTime = TankmenBG.animationNotes[i][0];
 					tankman.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
 					tankmanRun.add(tankman);
@@ -1333,25 +1303,6 @@ class PlayState extends MusicBeatState
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			if (swagCounter != 4)
-			{
-				gf.dance();
-			}
-
-			if (dadBeats.contains((swagCounter % 4)))
-				if (swagCounter != 4)
-				{
-					for (dad in dads)
-						dad.dance();
-				}
-
-			if (bfBeats.contains((swagCounter % 4)))
-				if (swagCounter != 4)
-				{
-					for (boyfriend in bfs)
-						boyfriend.dance();
-				}
-
 			switch (swagCounter)
 
 			{
@@ -1362,6 +1313,14 @@ class PlayState extends MusicBeatState
 						meta.start();
 					}
 				case 1:
+					for (dad in dads)
+						dad.dance();
+
+					for (boyfriend in bfs)
+						boyfriend.dance();
+
+					gf.dance();
+					
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.scrollFactor.set();
 					ready.antialiasing = !curStage.startsWith('school');
@@ -1410,6 +1369,14 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
 				case 3:
+					for (dad in dads)
+						dad.dance();
+
+					for (boyfriend in bfs)
+						boyfriend.dance();
+
+					gf.dance();
+					
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 					go.scrollFactor.set();
 					go.antialiasing = !curStage.startsWith('school');
@@ -1857,7 +1824,7 @@ class PlayState extends MusicBeatState
 			i.callFunction('update', [elapsed]);
 		#end
 
-		if (camZooming)
+		if (camZooming && camHUD.zoom > 1 && FlxG.camera.zoom > defaultCamZoom)
 		{
 			FlxG.camera.zoom = CoolUtil.fpsAdjsutedLerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = CoolUtil.fpsAdjsutedLerp(1, camHUD.zoom, 0.95);
@@ -2100,31 +2067,6 @@ class PlayState extends MusicBeatState
 		}
 
 		FlxG.watch.addQuick("totalBeats: ", totalBeats);
-
-		if (curSong == 'Fresh')
-		{
-			switch (totalBeats)
-			{
-				case 16:
-					camZooming = true;
-					bopSpeed = 2;
-					dadBeats = [0, 2];
-					bfBeats = [1, 3];
-				case 48:
-					bopSpeed = 1;
-					dadBeats = [0, 1, 2, 3];
-					bfBeats = [0, 1, 2, 3];
-				case 80:
-					bopSpeed = 2;
-					dadBeats = [0, 2];
-					bfBeats = [1, 3];
-				case 112:
-					bopSpeed = 1;
-					dadBeats = [0, 1, 2, 3];
-					bfBeats = [0, 1, 2, 3];
-				case 163:
-			}
-		}
 
 		// RESET = Quick Game Over Screen
 		if (controls.RESET && !startingSong)
@@ -3200,21 +3142,21 @@ class PlayState extends MusicBeatState
 				iconP1.iconScale = iconP1.defualtIconScale * 1.25;
 				iconP2.iconScale = iconP2.defualtIconScale * 1.25;
 
-				iconP1.tweenToDefaultScale(0.2, FlxEase.quintOut);
-				iconP2.tweenToDefaultScale(0.2, FlxEase.quintOut);
+				iconP1.tweenToDefaultScale(0.4, FlxEase.quintOut);
+				iconP2.tweenToDefaultScale(0.4, FlxEase.quintOut);
 
 				gf.dance();
 			}
 
 			for (dad in dads)
 			{
-				if (dad.holdTimer == 0 && dad.animation.curAnim.finished && dadBeats.contains(curBeat % 4) && dad.canAutoAnim)
+				if (dad.holdTimer == 0 && dad.animation.curAnim.finished && curBeat % 2 == 0 && dad.canAutoAnim)
 					dad.dance();
 			}
 
 			for (boyfriend in bfs)
 			{
-				if (bfBeats.contains(curBeat % 4) && !boyfriend.animation.curAnim.name.startsWith('sing') && boyfriend.canAutoAnim)
+				if (curBeat % 2 == 0 && !boyfriend.animation.curAnim.name.startsWith('sing') && boyfriend.canAutoAnim)
 				{
 					boyfriend.dance();
 				}

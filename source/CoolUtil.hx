@@ -42,7 +42,7 @@ class CoolUtil
 	 */
 	public static inline function fpsAdjust(value:Float, ?referenceFps:Float = 60):Float
 	{
-		return value * (FlxG.elapsed / (1 / referenceFps));
+		return FlxG.elapsed * 60 * value;
 	}
 
 	/*
