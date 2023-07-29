@@ -71,6 +71,10 @@ class MainMenuState extends MusicBeatState
 		magenta.antialiasing = true;
 		add(magenta);
 
+		#if sys
+		script.callFunction('create');
+		#end
+
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
@@ -103,8 +107,6 @@ class MainMenuState extends MusicBeatState
 		versionText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionText);
 
-		FlxTween.tween(versionText, {y: versionText.y - 16}, 0.75, {ease: FlxEase.quintOut, startDelay: 10});
-
 		changeItem();
 
 		// Offset Stuff
@@ -113,10 +115,14 @@ class MainMenuState extends MusicBeatState
 		if (Config.noFpsCap){
 			FlxG.stage.frameRate = 999;
 			FlxG.drawFramerate = 999;
-			FlxG.updateFramerate = 999;
-			FlxG.fixedTimestep = false;
+			//FlxG.updateFramerate = 999;
+			//FlxG.fixedTimestep = false;
 			trace('shit');
 		}
+
+		#if sys
+		script.callFunction('createPost');
+		#end
 
 		super.create();
 	}
@@ -125,6 +131,10 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		#if sys
+		script.callFunction('update', [elapsed]);
+		#end
+
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
@@ -154,6 +164,9 @@ class MainMenuState extends MusicBeatState
 			{
 				switchState(new TitleScreen());
 			}
+
+			if (FlxG.keys.justPressed.TAB)
+				switchState(new ModSelectState());
 
 			if (FlxG.keys.justPressed.SEVEN && Config.debug)
 				openSubState(new editors.ToolBox());
@@ -227,10 +240,18 @@ class MainMenuState extends MusicBeatState
 		{
 			spr.screenCenter(X);
 		});
+
+		#if sys
+		script.callFunction('updatePost', [elapsed]);
+		#end
 	}
 
 	function changeItem(huh:Int = 0)
 	{
+		#if sys
+		script.callFunction('changeItem', [huh]);
+		#end
+
 		curSelected += huh;
 
 		if (curSelected >= menuItems.length)
@@ -250,5 +271,9 @@ class MainMenuState extends MusicBeatState
 
 			spr.updateHitbox();
 		});
+
+		#if sys
+		script.callFunction('changeItemPost', [huh]);
+		#end
 	}
 }
