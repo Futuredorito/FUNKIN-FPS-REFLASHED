@@ -42,13 +42,7 @@ function update(elapsed)
 {
 	if (trainMoving)
 	{
-		trainFrameTiming += elapsed;
-
-		if (trainFrameTiming >= 1 / 24)
-		{
 			updateTrainPos();
-			trainFrameTiming = 0;
-		}
 	}
 }
 
@@ -72,7 +66,6 @@ function beatHit()
 var trainMoving:Bool = false;
 var trainFrameTiming:Float = 0;
 var trainCars:Int = 8;
-var trainFinishing:Bool = false;
 var trainCooldown:Int = 0;
 
 function trainStart():Void
@@ -94,18 +87,9 @@ function updateTrainPos():Void
 
 	if (startedMoving)
 	{
-		phillyTrain.x -= 400;
+		phillyTrain.x -= 20;
 
-		if (phillyTrain.x < -2000 && !trainFinishing)
-		{
-			phillyTrain.x = -1150;
-			trainCars -= 1;
-
-			if (trainCars <= 0)
-				trainFinishing = true;
-		}
-
-		if (phillyTrain.x < -4000 && trainFinishing)
+		if (phillyTrain.x < -4000)
 			trainReset();
 	}
 }
@@ -116,6 +100,5 @@ function trainReset():Void
 	phillyTrain.x = FlxG.width + 200;
 	trainMoving = false;
 	trainCars = 8;
-	trainFinishing = false;
 	startedMoving = false;
 }

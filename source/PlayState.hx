@@ -570,6 +570,30 @@ class PlayState extends MusicBeatState
 
 		for (allowed in HScript.allowedExtensions)
 		{
+			if (FileSystem.exists('./assets/data/${SONG.song.toLowerCase()}'))
+				{
+					for (i in FileSystem.readDirectory('./assets/data/${SONG.song.toLowerCase()}'))
+					{
+						if (i.contains(allowed))
+						{
+							var scriptrel:Array<String> = i.split('.');
+	
+							scriptrel.remove(allowed);
+	
+							var script:HScript = new HScript('data/' + SONG.song.toLowerCase() + '/' + scriptrel[0]);
+	
+							if (!script.isBlank && script.expr != null)
+							{
+								script.interp.scriptObject = this;
+								script.setValue('add', add);
+								script.interp.execute(script.expr);
+							}
+	
+							scripts.push(script);
+						}
+					}
+				}
+	
 			if (FileSystem.exists('./mods/${Assets.getText(Paths.text('modSelected'))}/data/${SONG.song}'))
 			{
 				for (i in FileSystem.readDirectory('./mods/${Assets.getText(Paths.text('modSelected'))}/data/${SONG.song}'))
