@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxG;
 import Conductor.BPMChangeEvent;
 
 class MusicBeatState extends UIStateExt
@@ -16,6 +15,8 @@ class MusicBeatState extends UIStateExt
 
 	override function create()
 	{
+		openfl.system.System.gc();
+
 		super.create();
 	}
 

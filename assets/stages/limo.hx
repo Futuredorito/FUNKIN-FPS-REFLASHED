@@ -3,6 +3,7 @@ import flixel.util.FlxTimer;
 var limo:FlxSprite;
 var fastCar:FlxSprite;
 var fastCarCanDrive:Bool = true;
+var dancers:Array<FlxSprite>;
 
 function create()
 {
@@ -19,6 +20,9 @@ function create()
 	bgLimo.scrollFactor.set(0.4, 0.4);
 	add(bgLimo);
 
+	dancers = [];
+	add(dancers);
+
 	for (i in 0...5)
 	{
 		var dancer = new FlxSprite((370 * i) + 130, bgLimo.y - 400);
@@ -29,6 +33,7 @@ function create()
 		dancer.animation.play('danceLeft');
 		dancer.antialiasing = true;
 	    add(dancer);
+		dancers.push(dancer);
 	}
 
 	limo = new FlxSprite(-120, 550);
@@ -49,9 +54,20 @@ function createPost(){
     resetFastCar();
 }
 
+var danced = false;
+
 function beatHit(){
+	danced = !danced;
+
     if (FlxG.random.bool(10) && fastCarCanDrive)
         fastCarDrive();
+
+	for (dancer in dancers){
+		if (danced)
+			dancer.animation.play('danceRight');
+		else
+			dancer.animation.play('danceLeft');
+	}
 }
 
 

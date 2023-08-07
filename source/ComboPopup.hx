@@ -136,6 +136,8 @@ class ComboPopup extends FlxSpriteGroup
 		FlxTween.tween(ratingSprite, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween){
 				ratingSprite.destroy();
+
+				openfl.system.System.gc();
 			},
 			startDelay: Conductor.crochet * 0.00075
 		});

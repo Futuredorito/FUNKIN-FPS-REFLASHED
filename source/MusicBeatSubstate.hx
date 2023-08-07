@@ -25,6 +25,8 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function create()
 	{
+		openfl.system.System.gc();
+
 		super.create();
 	}
 
@@ -71,5 +73,17 @@ class MusicBeatSubstate extends FlxSubState
 	{
 		lastBeat += Conductor.crochet;
 		totalBeats += 1;
+	}
+
+	override public function close() {
+		openfl.system.System.gc();
+
+		super.close();
+	}
+
+	override public function destroy() {
+		openfl.system.System.gc();
+
+		super.destroy();
 	}
 }

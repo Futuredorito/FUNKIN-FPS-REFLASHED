@@ -159,6 +159,8 @@ class VideoHandler extends FlxSprite
 			finishCallback();
 		}
 
+		openfl.system.System.gc();
+
 		vlcClean();
 
 		//FlxG.autoPause = true;
@@ -177,6 +179,9 @@ class VideoHandler extends FlxSprite
 		}
 
 		trace("Done!");
+
+		openfl.system.System.gc();
+
 		completed = true;
 	}
 	#end
@@ -386,6 +391,8 @@ class VideoHandler extends FlxSprite
 			netClean();
 		}
 		#end
+
+		openfl.system.System.gc();
 
 		super.destroy();
 		
