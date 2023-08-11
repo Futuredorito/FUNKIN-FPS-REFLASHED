@@ -173,6 +173,12 @@ class FreeplayState extends MusicBeatState
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
 
+		if (script.getValue('upP') != null)
+			upP = script.getValue('upP');
+
+		if (script.getValue('downP') != null)
+			downP = script.getValue('downP');
+
 		if (upP)
 		{
 			changeSelection(-1);

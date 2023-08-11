@@ -78,37 +78,6 @@ class Note extends FlxSprite
 
 		switch (daStage)
 		{
-			case 'school' | 'schoolEvil':
-				loadGraphic(Paths.image('week6/weeb/pixelUI/arrows-pixels'), true, 19, 19);
-
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
-
-				animation.add('green glow', [22]);
-				animation.add('red glow', [23]);
-				animation.add('blue glow', [21]);
-				animation.add('purple glow', [20]);
-
-				if (isSustainNote)
-				{
-					loadGraphic(Paths.image('week6/weeb/pixelUI/arrowEnds'), true, 7, 6);
-
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
-
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
-				}
-
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
-
 			default:
 				frames = Paths.getSparrowAtlas('ui/NOTE_assets');
 
@@ -166,8 +135,6 @@ class Note extends FlxSprite
 			}
 			updateHitbox();
 			xOffset -= width / 2;
-			if (PlayState.curStage.startsWith('school'))
-				xOffset += 36;
 			if (prevNote.isSustainNote)
 			{
 				switch (prevNote.noteData)
