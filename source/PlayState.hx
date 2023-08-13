@@ -142,10 +142,8 @@ class PlayState extends MusicBeatState
 	public var healthBar:FlxBar;
 
 	public var timeBarBG:FlxSprite;
-
-	public static var timeBar:FlxBar;
-
-	var timeTxt:FlxText;
+	public var timeBar:FlxBar;
+	public var timeTxt:FlxText;
 
 	public var timeBarTime:Float = 0;
 
