@@ -3,7 +3,7 @@ import CoolUtil;
 var bgGirls:FlxSprite;
 
 function create()
-{
+{	
 	curStage = 'school';
 
 	var bgSky = new FlxSprite().loadGraphic(Paths.image('week6/weeb/weebSky'));

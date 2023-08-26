@@ -1,5 +1,8 @@
 package;
 
+#if sys
+import sys.FileSystem;
+#end
 import lime.app.Application;
 import config.*;
 import title.TitleScreen;
@@ -11,7 +14,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
 import flixel.text.FlxText;
 
 using StringTools;
@@ -22,7 +24,7 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'options', 'credits'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'options', 'credits'];
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -32,6 +34,15 @@ class MainMenuState extends MusicBeatState
 	override function create()
 	{
 		DiscordClient.changePresence('In the menus.', '');
+
+		#if sys
+		if (FileSystem.exists('./mods'))
+		{
+			for (i => mods in FileSystem.readDirectory('./mods'))
+				if (i > 0 && !optionShit.contains('mods'))
+					optionShit.insert(2, 'mods');
+		}
+		#end
 
 		script = new HScript('states/MainMenuState');
 
@@ -84,7 +95,8 @@ class MainMenuState extends MusicBeatState
 			menuItem.frames = Paths.getSparrowAtlas('menu/options/' + optionShit[i]);
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
-			menuItem.animation.play('idle');
+			if (menuItem.animation.exists('idle'))
+				menuItem.animation.play('idle');
 			menuItem.ID = i;
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set(0, 0.95);
@@ -112,11 +124,12 @@ class MainMenuState extends MusicBeatState
 		// Offset Stuff
 		Config.reload();
 
-		if (Config.noFpsCap){
+		if (Config.noFpsCap)
+		{
 			FlxG.stage.frameRate = 999;
 			FlxG.drawFramerate = 999;
-			//FlxG.updateFramerate = 999;
-			//FlxG.fixedTimestep = false;
+			// FlxG.updateFramerate = 999;
+			// FlxG.fixedTimestep = false;
 			trace('shit');
 		}
 
@@ -165,9 +178,6 @@ class MainMenuState extends MusicBeatState
 				switchState(new TitleScreen());
 			}
 
-			if (FlxG.keys.justPressed.TAB)
-				switchState(new ModSelectState());
-
 			if (FlxG.keys.justPressed.SEVEN && Config.debug)
 				openSubState(new editors.ToolBox());
 
@@ -178,15 +188,9 @@ class MainMenuState extends MusicBeatState
 
 				var daChoice:String = optionShit[curSelected];
 
-				switch (daChoice)
-				{
-					case 'freeplay':
-						FlxG.sound.music.stop();
-					case 'options':
-						FlxG.sound.music.stop();
-					case 'credits':
-						FlxG.sound.music.stop();
-				}
+				#if sys
+				script.callFunction('select', [daChoice]);
+				#end
 
 				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 

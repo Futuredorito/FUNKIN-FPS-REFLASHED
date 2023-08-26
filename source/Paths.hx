@@ -1,5 +1,6 @@
 package;
 
+import openfl.Assets;
 import flixel.FlxG;
 #if sys
 import sys.FileSystem;
@@ -63,14 +64,14 @@ class Paths
 		return file(key, "music", audioExtension);
 	}
 
-	inline static public function voices(key:String, key2:String = 'Voices')
+	inline static public function song(song:String, type:String = 'Inst', diff:String = 'NORMAL')
 	{
-		return 'assets/songs/$key/$key2.ogg';
-	}
+		var formatSong = 'assets/songs/$song/$type';
 
-	inline static public function inst(key:String, key2:String = 'Inst')
-	{
-		return 'assets/songs/$key/$key2.ogg';
+		if (Assets.exists(formatSong + '-' + diff.toLowerCase() + '.ogg'))
+			formatSong += '-' + diff.toLowerCase();
+
+		return formatSong + '.ogg';
 	}
 
 	inline static public function getSparrowAtlas(key:String)

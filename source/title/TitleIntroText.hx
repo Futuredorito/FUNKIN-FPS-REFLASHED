@@ -49,7 +49,7 @@ class TitleIntroText extends MusicBeatState
 		#if sys
 		polymod.Polymod.init({
 			modRoot: "mods",
-			dirs: [Assets.getText(Paths.text('modSelected')), 'global', 'Global'],
+			dirs: [Assets.getText(Paths.text('modSelected')), 'global'],
 			errorCallback: (e) ->
 			{
 				trace(e.message);
@@ -61,6 +61,8 @@ class TitleIntroText extends MusicBeatState
 					"data" => "assets/data",
 					"notes" => "assets/notes",
 					"characters" => "assets/characters",
+					"states" => "assets/states",
+					"events" => "assets/events",
 					"fonts" => "assets/fonts",
 					"sounds" => "assets/sounds",
 					"music" => "assets/music",

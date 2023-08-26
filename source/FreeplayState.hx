@@ -1,5 +1,6 @@
 package;
 
+import flixel.sound.FlxSound;
 import openfl.Assets;
 import haxe.Json;
 import flixel.FlxG;
@@ -17,6 +18,7 @@ typedef FreeplaySongShit =
 	var icons:Array<String>;
 	var diffs:Array<String>;
 	var colors:Array<FlxColor>;
+	var bpm:Array<Int>;
 	var week:Int;
 }
 
@@ -51,6 +53,8 @@ class FreeplayState extends MusicBeatState
 	public static var speed:Float = 1;
 
 	var script:HScript;
+
+	var vocals:FlxSound;
 
 	override function create()
 	{
@@ -110,20 +114,12 @@ class FreeplayState extends MusicBeatState
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter, false, true);
 			icon.sprTracker = songText;
-
-			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
 			add(icon);
-
-			// songText.x += 40;
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			// songText.screenCenter(X);
 		}
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		// scoreText.autoSize = false;
 		scoreText.setFormat(Paths.font("vcr"), 32, FlxColor.WHITE, RIGHT);
-		// scoreText.alignment = RIGHT;
 
 		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 66, 0xFF000000);
 		scoreBG.alpha = 0.6;
@@ -135,14 +131,23 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 
+		var idkWhatToCallThis = new FlxSprite(0, (FlxG.height * 0.9) + 44).makeGraphic(FlxG.width, 30, FlxColor.BLACK);
+		idkWhatToCallThis.alpha = 0.5;
+		add(idkWhatToCallThis);
+
+		var amogText = new FlxText(0, idkWhatToCallThis.y, 0, 'Press Space To Listion To The Song And Enter To Play.');
+		amogText.setFormat(Paths.font("vcr"), 22, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+		add(amogText);
+
 		#if sys
 		script.callFunction('createPost');
 		#end
 
 		changeSelection(startingSelection);
-		FlxG.sound.music.pitch = speed;
 
 		super.create();
+
+		Conductor.changeBPM(280);
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, songColor:FlxColor, songDiffs:Array<String>)
@@ -161,6 +166,8 @@ class FreeplayState extends MusicBeatState
 		#if sys
 		script.callFunction('update', [elapsed]);
 		#end
+
+		FlxG.camera.zoom = FlxMath.lerp(1, FlxG.camera.zoom, 0.95);
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 
@@ -191,6 +198,28 @@ class FreeplayState extends MusicBeatState
 		if (FlxG.mouse.wheel > 0 || FlxG.mouse.wheel < 0)
 			changeSelection(-FlxG.mouse.wheel);
 
+		if (FlxG.keys.justPressed.SPACE){
+			openfl.system.System.gc();
+
+			FlxG.sound.cache(Paths.song(songs[curSelected].songName, "Inst", songs[curSelected].songDiffs[curDifficulty]));
+			FlxG.sound.cache(Paths.song(songs[curSelected].songName, "Voices", songs[curSelected].songDiffs[curDifficulty]));
+	
+			if (vocals != null){
+				vocals.pause();
+				vocals.kill();
+			}
+
+			FlxG.sound.playMusic(Paths.song(songs[curSelected].songName, "Inst", songs[curSelected].songDiffs[curDifficulty]), 0);
+			FlxG.sound.music.fadeIn(1, 0, 0.8);
+			FlxG.sound.music.pitch = speed;	
+
+			vocals = new FlxSound().loadEmbedded(Paths.song(songs[curSelected].songName, "Voices", songs[curSelected].songDiffs[curDifficulty]));
+			vocals.volume = 0;
+			vocals.fadeIn(1, 0, 0.8);
+			vocals.pitch = speed;	
+			FlxG.sound.list.add(vocals);
+		}
+
 		if (!FlxG.keys.pressed.SHIFT)
 		{
 			if (controls.LEFT_P)
@@ -209,6 +238,7 @@ class FreeplayState extends MusicBeatState
 					speed = 0.5;
 
 				FlxG.sound.music.pitch = speed;
+				vocals.pitch = speed;
 			}
 			if (controls.RIGHT_P)
 			{
@@ -218,6 +248,7 @@ class FreeplayState extends MusicBeatState
 					speed = 3;
 
 				FlxG.sound.music.pitch = speed;
+				vocals.pitch = speed;	
 			}
 		}
 
@@ -228,7 +259,7 @@ class FreeplayState extends MusicBeatState
 			switchState(new MainMenuState());
 		}
 
-		if (accepted)
+		if (accepted && !FlxG.keys.pressed.SPACE)
 		{
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), songs[curSelected].songDiffs[curDifficulty]);
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
@@ -240,8 +271,10 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
 			switchState(new PlayState());
-			if (FlxG.sound.music != null)
+			if (FlxG.sound.music != null){
 				FlxG.sound.music.stop();
+				vocals.stop();
+			}
 		}
 
 		#if sys
@@ -273,10 +306,6 @@ class FreeplayState extends MusicBeatState
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].songDiffs[curDifficulty]);
 		#end
-
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
-		FlxG.sound.music.fadeIn(1, 0, 0.8);
-		FlxG.sound.music.pitch = speed;
 
 		var bullShit:Int = 0;
 
@@ -323,6 +352,13 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		diffText.text = songs[curSelected].songDiffs[curDifficulty].toUpperCase();
+	}
+
+	override public function beatHit() {
+		super.beatHit();
+
+		iconArray[curSelected].scale.set(1.3, 1.3);
+		FlxG.camera.zoom += 0.2;
 	}
 }
 

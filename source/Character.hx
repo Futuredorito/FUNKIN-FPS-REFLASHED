@@ -16,6 +16,7 @@ typedef AnimLoading =
 	var y:Float;
 	var looped:Bool;
 	var fps:Int;
+	var indices:Array<Int>;
 }
 
 typedef CharacterLoading =
@@ -23,10 +24,8 @@ typedef CharacterLoading =
 	var image:String;
 	var flipX:Bool;
 	var flipY:Bool;
-	var x:Float;
-	var y:Float;
-	var camY:Float;
-	var camX:Float;
+	var charPos:Array<Float>;
+	var charCamPos:Array<Float>;
 	var iconName:String;
 	var deathCharacter:String;
 	var iconColor:String;
@@ -63,6 +62,8 @@ class Character extends FlxSprite
 
 	public var camX:Float;
 	public var camY:Float;
+	public var charX:Float;
+	public var charY:Float;
 
 	var script:HScript;
 
@@ -86,7 +87,9 @@ class Character extends FlxSprite
 			script.interp.scriptObject = this;
 			script.setValue('character', character);
 			script.interp.execute(script.expr);
-		}else{
+		}
+		else
+		{
 			loadByJson('dad');
 		}
 
@@ -124,7 +127,8 @@ class Character extends FlxSprite
 			}
 		}
 
-		animation.finishCallback = function(anim) {
+		animation.finishCallback = function(anim)
+		{
 			danceLockout = false;
 		};
 
@@ -255,23 +259,6 @@ class Character extends FlxSprite
 
 		animation.play(AnimName, Force, Reversed, Frame);
 		changeOffsets();
-
-		if (curCharacter == 'gf')
-		{
-			if (AnimName == 'singLEFT')
-			{
-				danced = true;
-			}
-			else if (AnimName == 'singRIGHT')
-			{
-				danced = false;
-			}
-
-			if (AnimName == 'singUP' || AnimName == 'singDOWN')
-			{
-				danced = !danced;
-			}
-		}
 	}
 
 	function changeOffsets()
@@ -315,7 +302,10 @@ class Character extends FlxSprite
 			if (anim.looped != true && anim.looped != false)
 				anim.looped = false;
 
-			animation.addByPrefix(anim.anim, anim.prefix, anim.fps, anim.looped);
+			if (anim.indices != null)
+				animation.addByIndices(anim.anim, anim.prefix, anim.indices, "", anim.fps, anim.looped);
+			else
+				animation.addByPrefix(anim.anim, anim.prefix, anim.fps, anim.looped);
 
 			addOffset(anim.anim, anim.x, anim.y);
 		}
@@ -331,7 +321,9 @@ class Character extends FlxSprite
 		hasWinningIcons = charJson.hasWinningIcon;
 		facesLeft = charJson.flipX;
 		flipY = charJson.flipY;
-		camY = charJson.camY;
-		camX = charJson.camX;
+		camX = charJson.charCamPos[0];
+		camY = charJson.charCamPos[1];
+		charX = charJson.charPos[0];
+		charY = charJson.charPos[1];
 	}
 }

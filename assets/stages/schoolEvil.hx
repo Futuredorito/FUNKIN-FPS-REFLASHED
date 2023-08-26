@@ -19,4 +19,7 @@ function createPost() {
     boyfriend.y += 220;
     gf.x += 180;
     gf.y += 300;
+
+	var evilTrail = new DeltaTrail(dad, null, 10, 3 / 60, 0.4);
+	add(evilTrail);
 }

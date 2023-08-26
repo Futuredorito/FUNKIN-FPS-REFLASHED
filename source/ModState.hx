@@ -2,9 +2,14 @@ package;
 
 class ModState extends MusicBeatState
 {
-	public static var state:String;
-
+	var state:String;
 	var stateScript:HScript;
+
+    override public function new(state:String) {
+        super();
+
+        this.state = state;
+    }
 
 	override public function create()
 	{

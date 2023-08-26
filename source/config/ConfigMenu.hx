@@ -40,6 +40,9 @@ class ConfigMenu extends MusicBeatState
 	var noteSplashValue:Int;
 	var noteSplashTypes:Array<String> = ["off", "sick only", "always"];
 	var debugValue:Bool;
+	var oppHitTypeValue:String;
+	var oppHitTypeTypes:Array<String> = ["FPS", "REFLASHED", "LEATHER", "BASE"];
+	var oppHitTypeInt:Int;
 
 	var tabKeys:Array<String> = [];
 
@@ -50,8 +53,8 @@ class ConfigMenu extends MusicBeatState
 	final genericOnOff:Array<String> = ["on", "off"];
 
 	final settingText:Array<String> = [
-		"NOTE OFFSET", "UNCAPPED FRAMERATE", "ALLOW GHOST TAPPING", "HP GAIN MULTIPLIER", "HP DRAIN MULTIPLIER", "DOWNSCROLL",
-		"NOTE GLOW", "COMBO DISPLAY", "NOTE SPLASH", "UI TYPE", "BACKGROUND DIM", "CONTROLLER SCHEME", "[EDIT KEY BINDS]", "DEBUG"
+		"NOTE OFFSET", "UNCAPPED FRAMERATE", "ALLOW GHOST TAPPING", "HP GAIN MULTIPLIER", "HP DRAIN MULTIPLIER", "DOWNSCROLL", "NOTE GLOW", "COMBO DISPLAY",
+		"NOTE SPLASH", "OPP HIT TYPE", "UI TYPE", "BACKGROUND DIM", "CONTROLLER SCHEME", "[EDIT KEY BINDS]", "DEBUG"
 	];
 
 	// Any descriptions that say TEMP are replaced with a changing description based on the current config setting.
@@ -66,6 +69,7 @@ class ConfigMenu extends MusicBeatState
 		"Makes note arrows glow if they are able to be hit.",
 		"TEMP",
 		"TEMP",
+		"Makes dads notes different.",
 		"Choose your UI.",
 		"Adjusts how dark the background is.\nIt is recommended that you use the HUD combo display with a high background dim.",
 		"TEMP",
@@ -142,6 +146,8 @@ class ConfigMenu extends MusicBeatState
 		dimValue = Config.bgDim;
 		noteSplashValue = Config.noteSplashType;
 		debugValue = Config.debug;
+		oppHitTypeValue = Config.oppHitType;
+		oppHitTypeInt = oppHitTypeTypes.indexOf(Config.oppHitType);
 
 		var tex = Paths.getSparrowAtlas('menu/options/options');
 		var optionTitle:FlxSprite = new FlxSprite(0, 55);
@@ -428,8 +434,30 @@ class ConfigMenu extends MusicBeatState
 						noteSplashValue = 0;
 					if (noteSplashValue < 0)
 						noteSplashValue = comboTypes.length - 1;
-				case 9: //ui
-				if (controls.RIGHT_P)
+
+				case 9:
+					if (controls.RIGHT_P)
+					{
+						FlxG.sound.play(Paths.sound('scrollMenu'));
+						oppHitTypeInt += 1;
+					}
+
+					if (controls.LEFT_P)
+					{
+						FlxG.sound.play(Paths.sound('scrollMenu'));
+						oppHitTypeInt -= 1;
+					}
+
+					if (oppHitTypeInt > 3)
+						oppHitTypeInt = 0;
+
+					if (oppHitTypeInt < 0)
+						oppHitTypeInt = 3;
+
+					oppHitTypeValue = oppHitTypeTypes[oppHitTypeInt];
+
+				case 10: // ui
+					if (controls.RIGHT_P)
 					{
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 						uiTypeInt += 1;
@@ -448,7 +476,7 @@ class ConfigMenu extends MusicBeatState
 						uiTypeInt = 3;
 
 					uiType = uiTypes[uiTypeInt];
-				case 10: // BG Dim
+				case 20: // BG Dim
 					if (controls.RIGHT_P)
 					{
 						FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -466,7 +494,7 @@ class ConfigMenu extends MusicBeatState
 					if (dimValue < 0)
 						dimValue = 10;
 
-				case 11: // Controller Stuff
+				case 21: // Controller Stuff
 					if (controls.RIGHT_P)
 					{
 						FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -492,7 +520,7 @@ class ConfigMenu extends MusicBeatState
 						switchState(new KeyBindMenuController());
 					}
 
-				case 12: // Binds
+				case 22: // Binds
 					if (controls.ACCEPT)
 					{
 						FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -500,8 +528,9 @@ class ConfigMenu extends MusicBeatState
 						writeToConfig();
 						switchState(new KeyBindMenu());
 					}
-				case 13:
-					if (controls.ACCEPT){
+				case 23:
+					if (controls.ACCEPT)
+					{
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 						debugValue = !debugValue;
 						writeToConfig();
@@ -591,13 +620,13 @@ class ConfigMenu extends MusicBeatState
 			case 8:
 				descText.text = noteSplashDesc[noteSplashValue];
 
-			case 10:
+			case 11:
 				descText.text = settingDesc[configSelected];
 				#if web
 				descText.text = "Disabled.";
 				#end
 
-			case 11:
+			case 12:
 				descText.text = controlSchemesDesc[scheme];
 
 			default:
@@ -629,13 +658,15 @@ class ConfigMenu extends MusicBeatState
 			case 8:
 				return ": " + noteSplashTypes[noteSplashValue];
 			case 9:
-				return ": " + uiType; 
+				return ": " + oppHitTypeValue;
 			case 10:
-				return ": " + (dimValue * 10) + "%";
+				return ": " + uiType;
 			case 11:
+				return ": " + (dimValue * 10) + "%";
+			case 12:
 				return ": " + controlSchemes[scheme];
-			case 13:
-				return ": " + debugValue;
+			case 14:
+				return ": " + genericOnOff[debugValue ? 0 : 1];
 		}
 
 		return "";
@@ -662,13 +693,14 @@ class ConfigMenu extends MusicBeatState
 		switch (combo)
 		{
 			case "KADE":
-				Config.write(offsetValue, "complex", 5, 5, 1, downValue, false, 2, noCapValue, scheme, dimValue, noteSplashValue, debugValue);
+				Config.write(offsetValue, "complex", 5, 5, 1, downValue, false, 2, noCapValue, scheme, dimValue, noteSplashValue, debugValue, oppHitTypeValue);
 				exit();
 			case "ROZE":
-				Config.write(offsetValue, "simple", 1, 1, 0, true, true, 0, noCapValue, scheme, dimValue, noteSplashValue, debugValue);
+				Config.write(offsetValue, "simple", 1, 1, 0, true, true, 0, noCapValue, scheme, dimValue, noteSplashValue, debugValue, oppHitTypeValue);
 				exit();
 			case "CVAL":
-				Config.write(offsetValue, "simple", 1, 1, comboValue, false, glowValue, 1, noCapValue, scheme, dimValue, noteSplashValue, debugValue);
+				Config.write(offsetValue, "simple", 1, 1, comboValue, false, glowValue, 1, noCapValue, scheme, dimValue, noteSplashValue, debugValue,
+					oppHitTypeValue);
 				exit();
 			case "GOTOHELLORSOMETHING":
 				System.exit(0); // I am very funny.
@@ -677,7 +709,7 @@ class ConfigMenu extends MusicBeatState
 
 	function writeToConfig()
 	{
-		Config.write(offsetValue, uiType, healthValue / 10.0, healthDrainValue / 10.0, comboValue, downValue, glowValue, randomTapValue,
-			noCapValue, scheme, dimValue, noteSplashValue, debugValue);
+		Config.write(offsetValue, uiType, healthValue / 10.0, healthDrainValue / 10.0, comboValue, downValue, glowValue, randomTapValue, noCapValue, scheme,
+			dimValue, noteSplashValue, debugValue, oppHitTypeValue);
 	}
 }

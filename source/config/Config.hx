@@ -18,6 +18,7 @@ class Config
 	public static var bgDim:Int;
 	public static var noteSplashType:Int;
 	public static var debug:Bool;
+	public static var oppHitType:String;
 
 	public static function resetSettings():Void{
 
@@ -34,8 +35,8 @@ class Config
 		FlxG.save.data.bgDim = 0;
 		FlxG.save.data.noteSplashType = 0;
 		FlxG.save.data.debug = false;
+		FlxG.save.data.oppHitType = "FPS";
 		reload();
-
 	}
 	
 	public static function reload():Void
@@ -53,6 +54,7 @@ class Config
 		bgDim = FlxG.save.data.bgDim;
 		noteSplashType = FlxG.save.data.noteSplashType;
 		debug = FlxG.save.data.debug;
+		oppHitType = FlxG.save.data.oppHitType;
 	}
 	
 	public static function write(
@@ -68,7 +70,8 @@ class Config
 								controllerSchemeW:Int,
 								bgDimW:Int,
 								noteSplashTypeW:Int,
-								debugW:Bool
+								debugW:Bool,
+								oppHitTypeW:String
 								):Void
 	{
 
@@ -85,6 +88,7 @@ class Config
 		FlxG.save.data.bgDim = bgDimW;
 		FlxG.save.data.noteSplashType = noteSplashTypeW;
 		FlxG.save.data.debug = debugW;
+		FlxG.save.data.oppHitType = oppHitTypeW;
 
 		FlxG.save.flush();
 		
@@ -119,6 +123,8 @@ class Config
 			FlxG.save.data.noteSplashType = 1;
 		if (FlxG.save.data.debug == null)
 			FlxG.save.data.debug = false;
+		if(FlxG.save.data.oppHitType == null)
+			FlxG.save.data.oppHitType = "FPS";
 
 		if(FlxG.save.data.ee1 == null)
 			FlxG.save.data.ee1 = false;

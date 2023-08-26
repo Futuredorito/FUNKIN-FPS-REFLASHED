@@ -1,0 +1,127 @@
+{
+  "iconColor": "#31B0D1",
+  "image": "BOYFRIEND",
+  "charPos": [0, 0],
+  "deathCharacter": "bf",
+  "flipX": true,
+  "flipY": false,
+  "anims": [
+    {
+      "x": 0,
+      "y": 0,
+      "anim": "idle",
+      "prefix": "BF idle dance",
+      "looped": false
+    },
+    {
+      "x": -40,
+      "y": 29,
+      "anim": "singUP",
+      "prefix": "BF NOTE UP0",
+      "looped": false
+    },
+    {
+      "x": -20,
+      "y": -50,
+      "anim": "singDOWN",
+      "prefix": "BF NOTE DOWN0",
+      "looped": false
+    },
+    {
+      "x": 5,
+      "y": -5,
+      "anim": "singLEFT",
+      "prefix": "BF NOTE LEFT0",
+      "looped": false
+    },
+    {
+      "x": -40,
+      "y": -10,
+      "anim": "singRIGHT",
+      "prefix": "BF NOTE RIGHT0",
+      "looped": false
+    },
+    {
+      "x": -37,
+      "y": 26,
+      "anim": "singUPmiss",
+      "prefix": "BF NOTE UP MISS",
+      "looped": false
+    },
+    {
+      "x": -20,
+      "y": -26,
+      "anim": "singDOWNmiss",
+      "prefix": "BF NOTE DOWN MISS",
+      "looped": false
+    },
+    {
+      "x": -40,
+      "y": 20,
+      "anim": "singRIGHTmiss",
+      "prefix": "BF NOTE RIGHT MISS",
+      "looped": false
+    },
+    {
+      "x": 6,
+      "y": 18,
+      "anim": "singLEFTmiss",
+      "prefix": "BF NOTE LEFT MISS",
+      "looped": false
+    },
+    { "x": 0, "y": 0, "anim": "hey", "prefix": "BF HEY", "looped": false },
+    {
+      "x": 0,
+      "y": 0,
+      "anim": "scared",
+      "prefix": "BF idle dance",
+      "looped": false
+    },
+    {
+      "x": 29,
+      "y": 1,
+      "anim": "firstDeath",
+      "prefix": "BF dies",
+      "looped": false
+    },
+    {
+      "x": 30,
+      "y": -4,
+      "anim": "deathLoop",
+      "prefix": "BF Dead Loop",
+      "looped": true
+    },
+    {
+      "x": 30,
+      "y": 60,
+      "anim": "deathConfirm",
+      "prefix": "BF Dead confirm",
+      "looped": false
+    },
+    {
+      "x": 0,
+      "y": -20,
+      "anim": "dodge",
+      "prefix": "boyfriend dodge",
+      "looped": false
+    },
+    { "x": 20, "y": 20, "anim": "hit", "prefix": "BF hit", "looped": false },
+    {
+      "x": -40,
+      "y": -40,
+      "anim": "micThrowPrepare",
+      "prefix": "bf pre attack",
+      "looped": false
+    },
+    {
+      "x": 300,
+      "y": 270,
+      "anim": "micThrowThrow",
+      "prefix": "boyfriend attack",
+      "looped": false
+    }
+  ],
+  "charCamPos": [0, 0],
+  "iconName": "bf",
+  "hasWinningIcon": true
+}

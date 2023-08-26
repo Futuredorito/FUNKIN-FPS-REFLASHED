@@ -198,9 +198,6 @@ class ChartEditor extends MusicBeatState
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);
 
-		leftIcon.iconScale = 0.5;
-		rightIcon.iconScale = 0.5;
-
 		leftIcon.setPosition((gridBG.width / 6) - (leftIcon.width / 4), -75);
 		rightIcon.setPosition((gridBG.width / 6) * 3 - (rightIcon.width / 4), -75);
 
@@ -710,10 +707,10 @@ class ChartEditor extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
+		FlxG.sound.playMusic(Paths.song(daSong, "Inst", PlayState.storyDifficulty), 0.6);
 
-		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		if (_song.needsVoices)
+			vocals = new FlxSound().loadEmbedded(Paths.song(daSong, "Voices", PlayState.storyDifficulty));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();

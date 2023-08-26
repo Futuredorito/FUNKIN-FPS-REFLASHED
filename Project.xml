@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="FPS PLUS - REFLASHED" file="FunkinPlus" main="Main" version="FNF: v0.2.7|FPS Plus: v4.0|0.0.1" company="504brandon" />
+	<app title="FPS PLUS - REFLASHED" file="FunkinPlus" main="Main" version="FNF: v0.2.7|FPS Plus: v4.0|0.0.2 BETA (github build)" company="504brandon" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />

@@ -25,7 +25,7 @@ class HScript
 	public var isBlank:Bool;
 
 	var blankVars:Map<String, Null<Dynamic>>;
-	var path:String;
+	public var path:String;
 
 	#if sys
 	public function new(scriptPath:String)
@@ -78,6 +78,8 @@ class HScript
 				"Assets" => openfl.Assets,
 				"Paths" => Paths,
 				"Files" => Paths,
+				"ModState" => ModState,
+				"CustomState" => ModState,
 				"CoolUtil" => CoolUtil,
 				"Config" => config.Config,
 				"FlxColor" => FlxColor_Helper,

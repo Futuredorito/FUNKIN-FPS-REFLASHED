@@ -3,9 +3,7 @@ package editors;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUITabMenu;
-import haxe.Json;
 import openfl.net.FileReference;
-import Character.AnimLoading;
 import flixel.ui.FlxButton;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.Clipboard;
@@ -14,7 +12,6 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -36,7 +33,7 @@ class CharEditor extends FlxState
 	var ischar:Bool = true;
 	var daAnim:String = 'dad';
 	var switchBack:String = 'PlayState';
-
+	var is_Player:FlxUICheckBox;
 	var camFollow:FlxObject;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
@@ -67,24 +64,6 @@ class CharEditor extends FlxState
 		var stage = new Stage('stage', this);
 		add(stage);
 
-		if (daAnim.contains('player') || daAnim.contains('bf'))
-			charBG = new Character(0, 0, daAnim, true, true);
-		else
-			charBG = new Character(0, 0, daAnim, false, true);
-		charBG.screenCenter();
-		charBG.alpha = 0.75;
-		charBG.color = 0xFF000000;
-		charBG.playAnim('idle');
-		add(charBG);
-
-		if (daAnim.contains('player') || daAnim.contains('bf'))
-			char = new Character(0, 0, daAnim, true, true);
-		else
-			char = new Character(0, 0, daAnim, false, true);
-		char.screenCenter();
-		char.playAnim('idle');
-		add(char);
-
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
 
@@ -105,6 +84,31 @@ class CharEditor extends FlxState
 		UI_box.y = 320;
 		UI_box.cameras = [camHUD];
 		add(UI_box);
+		is_Player = new FlxUICheckBox(10, 10, null, null, 'is Player');
+		is_Player.checked = daAnim.contains('player') || daAnim.contains('bf');
+
+		if (is_Player.checked)
+			charBG = new Character(770, 450, daAnim, true, true);
+		else
+			charBG = new Character(400, 130, daAnim, false, true);
+		charBG.screenCenter();
+		charBG.alpha = 0.75;
+		charBG.color = 0xFF000000;
+		charBG.playAnim('idle');
+		add(charBG);
+
+		if (is_Player.checked)
+			char = new Character(770, 450, daAnim, true, true);
+		else
+			char = new Character(400, 130, daAnim, false, true);
+		char.screenCenter();
+		char.playAnim('idle');
+		add(char);
+
+		char.x += char.charX;
+		char.y += char.charY;
+		charBG.x += charBG.charX;
+		charBG.y += charBG.charY;	
 
 		addShitIntoTheTabs();
 		genBoyOffsets();
@@ -196,8 +200,6 @@ class CharEditor extends FlxState
 		{
 			char.playAnim(animList[curAnim], true);
 
-			charBG.dance();
-
 			updateTexts();
 			genBoyOffsets(false);
 		}
@@ -228,28 +230,16 @@ class CharEditor extends FlxState
 		{
 			// updateTexts();
 			if (upP)
-			{
 				char.animOffsets.get(animList[curAnim])[1] += 1 * multiplier;
-				charBG.animOffsets.get(animList[curAnim])[1] += 1 * multiplier;
-			}
 
 			if (downP)
-			{
 				char.animOffsets.get(animList[curAnim])[1] -= 1 * multiplier;
-				charBG.animOffsets.get(animList[curAnim])[1] -= 1 * multiplier;
-			}
 
 			if (leftP)
-			{
 				char.animOffsets.get(animList[curAnim])[0] += 1 * multiplier;
-				charBG.animOffsets.get(animList[curAnim])[0] += 1 * multiplier;
-			}
 
 			if (rightP)
-			{
 				char.animOffsets.get(animList[curAnim])[0] -= 1 * multiplier;
-				charBG.animOffsets.get(animList[curAnim])[0] -= 1 * multiplier;
-			}
 
 			updateTexts();
 			genBoyOffsets(false);
@@ -275,12 +265,12 @@ class CharEditor extends FlxState
 	{
 		var char = {
 			"image": char.charJson.image,
+			"charPos": char.charJson.charPos,
+			"charCamPos": char.charJson.charCamPos,
 			"anims": char.charJson.anims,
 			"iconName": char.charJson.iconName,
 			"flipX": char.charJson.flipX,
 			"flipY": char.charJson.flipY,
-			"y": char.charJson.y,
-			"x": char.charJson.x,
 			"iconColor": char.charJson.iconColor,
 			"deathCharacter": char.charJson.deathCharacter,
 			"hasWinningIcon": char.charJson.hasWinningIcon
@@ -308,6 +298,10 @@ class CharEditor extends FlxState
 			char.deathCharacter = 'bf';
 		if (char.hasWinningIcon != true && char.hasWinningIcon != false)
 			char.hasWinningIcon = true;
+		if (char.charPos == null)
+			char.charPos = [0, 0];
+		if (char.charCamPos == null)
+			char.charCamPos = [0, 0];
 
 		var data:String = haxe.Json.stringify(char);
 
@@ -331,28 +325,32 @@ class CharEditor extends FlxState
 		saveChar.cameras = [camHUD];
 		charUI.add(saveChar);
 
-		var is_Player = new FlxUICheckBox(saveChar.x, saveChar.y - 20, null, null, 'is Player');
-		is_Player.checked = daAnim.contains('player') || daAnim.contains('bf');
 		is_Player.callback = function()
 		{
 			charBG.kill();
 			char.kill();
-
-			charBG = new Character(0, 0, daAnim, is_Player.checked, true);
+			if (is_Player.checked)
+				charBG = new Character(770, 450, daAnim, true, true);
+			else
+				charBG = new Character(400, 130, daAnim, false, true);
 			charBG.screenCenter();
 			charBG.alpha = 0.75;
 			charBG.color = 0xFF000000;
 			charBG.playAnim('idle');
 			add(charBG);
 
-			char = new Character(0, 0, daAnim, is_Player.checked, true);
+			if (is_Player.checked)
+				char = new Character(770, 450, daAnim, true, true);
+			else
+				char = new Character(400, 130, daAnim, false, true);
 			char.screenCenter();
-			char.charJson.flipX = is_Player.checked;
 			char.playAnim('idle');
 			add(char);
 
-			updateTexts();
-			genBoyOffsets(false);
+			char.x += char.charX;
+			char.y += char.charY;
+			charBG.x += charBG.charX;
+			charBG.y += charBG.charY;	
 		};
 		charUI.add(is_Player);
 
@@ -367,7 +365,7 @@ class CharEditor extends FlxState
 		icon.x = hpBarFill.x - 40;
 		icon.y = hpBarFill.y - 70;
 		charUI.add(icon);
-		
+
 		UI_box.addGroup(charUI);
 	}
 }

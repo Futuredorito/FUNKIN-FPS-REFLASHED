@@ -3,8 +3,8 @@
   "iconColor": "#AF66CE",
   "image": "week1/DADDY_DEAREST",
   "deathCharacter": "bf",
-  "x": null,
-  "y": null,
+  "charPos": [0, 0],
+  "charCamPos": [0, 0],
   "flipX": false,
   "flipY": false,
   "anims": [
